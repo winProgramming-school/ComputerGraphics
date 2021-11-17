@@ -24,7 +24,7 @@ void GameFramework::Clear()
 	delete scene;
 }
 
-void GameFramework::Create(HWND hWnd)
+void GameFramework::Create()
 {
 	curScene = new menuScene;	
 	nowscene = MENU;

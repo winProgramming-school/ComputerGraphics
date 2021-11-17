@@ -1,10 +1,10 @@
 #pragma once
 #include "scene.h"
 
-class menuScene : public scene {
+class gameScene : public scene {
 
 public:
-	virtual ~menuScene() override;
+	virtual ~gameScene() override;
 
 	virtual void init() override;
 

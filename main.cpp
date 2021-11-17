@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-
 #define WINDOW_LENGTH 800
 #define WINDOW_HEIGHT 800
 
@@ -36,6 +35,7 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
 		std::cout << "GLEW Initialized\n";
 
 
+	GameManager.Create();
 	InitBuffer();
 
 	glutMotionFunc(mouseMotion);
@@ -101,30 +101,7 @@ GLvoid mouseMotion(int x, int y) {
 }
 void InitBuffer() {
 	ourShader.use();
-	glGenVertexArrays(3, VAO);
-	glGenBuffers(3, VBO_position);
 
-	glBindVertexArray(VAO[0]);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO_position[0]);
-	glBufferData(GL_ARRAY_BUFFER, vertices_box.size() * sizeof(glm::vec3), &vertices_box[0], GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
-	glEnableVertexAttribArray(0);
-
-	glBindVertexArray(VAO[1]);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO_position[1]);
-	glBufferData(GL_ARRAY_BUFFER, vertices_cover.size() * sizeof(glm::vec3), &vertices_cover[0], GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
-	glEnableVertexAttribArray(0);
-
-
-	viewLocation = glGetUniformLocation(ourShader.ID, "viewTransform");
-	projectionLocation = glGetUniformLocation(ourShader.ID, "projectionTransform");
-	modelLocation = glGetUniformLocation(ourShader.ID, "modelTransform");
-	fragColor = glGetUniformLocation(ourShader.ID, "inputColor");
-
-
-	projection = glm::perspective(glm::radians(60.0f), (float)WINDOW_LENGTH / (float)WINDOW_HEIGHT, 0.2f, 200.0f);
-	glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, &projection[0][0]);
 
 	glBindVertexArray(0);
 	glUseProgram(0);

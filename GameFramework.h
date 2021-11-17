@@ -17,7 +17,7 @@ public:
 	void Reset();
 	void Clear();
 
-	void Create(HWND hWnd);
+	void Create();
 	void OnDraw();
 	void OnUpdate(int value);
 	void KeyBoard(unsigned char key, int x, int y);
