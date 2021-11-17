@@ -17,3 +17,5 @@
 #include "GameFramework.h"
 #include "scene.h"
 #include "MenuScene.h"
+#include "Objloader.h"
+#include "Shader.h"
