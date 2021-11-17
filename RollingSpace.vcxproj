@@ -144,12 +144,14 @@
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="menuScene.cpp" />
+    <ClCompile Include="Objloader.cpp" />
     <ClCompile Include="scene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameFramework.h" />
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="MenuScene.h" />
+    <ClInclude Include="Objloader.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
