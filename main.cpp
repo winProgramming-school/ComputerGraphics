@@ -53,19 +53,7 @@ GLvoid drawScene()
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
-	glEnable(GL_DEPTH_TEST);
-
-
-	glFrontFace(GL_CCW);
-	glEnable(GL_CULL_FACE);
-
-
-	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_CULL_FACE);
-
-	glBindVertexArray(0);
-	glUseProgram(0);
+	GameManager.OnDraw();
 
 	glutSwapBuffers(); // 화면에 출력하기
 }
@@ -76,15 +64,11 @@ GLvoid Reshape(int w, int h) //--- 콜백 함수: 다시 그리기 콜백 함수
 }
 
 GLvoid Keyboard(unsigned char key, int x, int y) {
-	switch (key) {
-
-	}
+	GameManager.KeyBoard(key, x, y);
 	glutPostRedisplay();
 }
 GLvoid TimerFunction(int value) {
-	switch (value) {
-
-	}
+	GameManager.OnUpdate(value);
 	glutPostRedisplay();
 }
 GLvoid mouse(int button, int state, int x, int y) {
@@ -100,10 +84,5 @@ GLvoid mouseMotion(int x, int y) {
 
 }
 void InitBuffer() {
-	ourShader.use();
-
-
-	glBindVertexArray(0);
-	glUseProgram(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	
 }

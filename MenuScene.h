@@ -2,6 +2,15 @@
 #include "scene.h"
 
 class menuScene : public scene {
+public:
+	std::vector< glm::vec3 > vertices_sphere;		//정점 저장 변수
+	std::vector< glm::vec2 > uvs_sphere;			
+	std::vector< glm::vec3 > normals_sphere;		//노멀 저장 변수
+
+	GLuint VAO;
+	GLuint VBO_position[2];
+
+	Shader ourShader;
 
 public:
 	virtual ~menuScene() override;

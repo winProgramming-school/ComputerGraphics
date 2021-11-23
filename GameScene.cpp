@@ -1,18 +1,18 @@
-#include "menuScene.h"
+#include "gameScene.h"
 #include "stdafx.h"
 
 extern GameFramework framework;
 
-menuScene::~menuScene()
+gameScene::~gameScene()
 {
 
 }
 
-void menuScene::init()
+void gameScene::init()
 {
 
 }
-void menuScene::processKey(unsigned char key, int x, int y)
+void gameScene::processKey(unsigned char key, int x, int y)
 {
 	switch (key)
 	{
@@ -20,12 +20,12 @@ void menuScene::processKey(unsigned char key, int x, int y)
 	}
 }
 
-void menuScene::Update(int value)
+void gameScene::Update(int value)
 {
 
 }
 
-void menuScene::Render()
+void gameScene::Render()
 {
 
 }

@@ -1,5 +1,8 @@
 #pragma once
 
+#define WINDOW_LENGTH 800
+#define WINDOW_HEIGHT 900
+
 // opengl 관련 헤더 파일
 
 #include <gl/glew.h> 
@@ -12,6 +15,7 @@
 // c++ 관련 헤더 파일
 #include <math.h>
 #include <iostream>
+#include <vector>
 
 // 프로그램에 필요한 추가 헤더
 #include "GameFramework.h"
