@@ -18,7 +18,7 @@ menuScene::~menuScene()
 void menuScene::init()
 {
 	ourShader.InitShader("vertex.glsl", "fragment.glsl");		// 쉐이더 생성
-																
+					 											
 	//여기에 obj로드코드
 	loadOBJ("sphere.obj", vertices_sphere, uvs_sphere, normals_sphere);
 
