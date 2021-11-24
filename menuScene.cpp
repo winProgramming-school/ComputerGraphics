@@ -20,7 +20,7 @@ void menuScene::init()
 	ourShader.InitShader("vertex.glsl", "fragment.glsl");		// 쉐이더 생성
 					 											
 	//여기에 obj로드코드
-	loadOBJ("sphere.obj", vertices_sphere, uvs_sphere, normals_sphere);
+	loadOBJ("sphere_.obj", vertices_sphere, uvs_sphere, normals_sphere);
 
 	//여기에 InitBuffer 내용
 	ourShader.use();
@@ -58,11 +58,11 @@ void menuScene::init()
 
 	CP.x = 0.0f;
 	CP.y = 0.0f;
-	CP.z = 0.5f;
+	CP.z = 2.0f;
 	
 	LP.x = 0.0f;
-	LP.y = 0.0f;
-	LP.z = 1.0f;
+	LP.y = 3.0f;
+	LP.z = 0.0f;
 
 
 	glBindVertexArray(0);
@@ -89,9 +89,9 @@ void menuScene::Render()
 	glEnable(GL_CULL_FACE);
 
 	//카메라 업데이트
-	/*cp.cameraPos = glm::vec3(cp.x, cp.y, cp.z);
-	cd.cameraDirection = glm::vec3(cd.x, cd.y, cd.z);
-	view = glm::lookAt(cp.cameraPos, cd.cameraDirection, cp.cameraUp);*/
+	CP.cameraPos = glm::vec3(CP.x, CP.y, CP.z);
+	CD.cameraDirection = glm::vec3(CD.x, CD.y, CD.z);
+	view = glm::lookAt(CP.cameraPos, CD.cameraDirection, CP.cameraUp);
 	glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
 	
 	//조명 위치 업데이트(조명 안 옮길거면 Init으로 옮겨도 되는 코드)
@@ -101,6 +101,7 @@ void menuScene::Render()
 	glUniform3f(viewPos, CP.x, CP.y, CP.z);
 
 	//여기에 그리기
+	glUniform3f(fragColor, 1.0f, 1.0f, 0.0f);
 	glDrawArrays(GL_TRIANGLES, 0, vertices_sphere.size());
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
