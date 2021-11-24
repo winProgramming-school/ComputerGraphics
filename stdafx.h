@@ -1,7 +1,7 @@
 #pragma once
 
 #define WINDOW_LENGTH 800
-#define WINDOW_HEIGHT 900
+#define WINDOW_HEIGHT 800
 
 // opengl 관련 헤더 파일
 
