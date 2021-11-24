@@ -5,7 +5,7 @@ in vec3 Normal; //--- 버텍스 세이더에서 받은 노멀값
 out vec4 FragColor; //--- 색상 출력
 
 uniform vec3 inputColor;
-uniform vec3 texCoord;
+//uniform vec3 texCoord;
 uniform vec3 lightPos; //--- 조명의 위치
 uniform vec3 lightColor; //--- 조명의 색
 

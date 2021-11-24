@@ -1,6 +1,8 @@
 #pragma once
 #include "scene.h"
 
+class Shader;
+
 class menuScene : public scene {
 public:
 	std::vector< glm::vec3 > vertices_sphere;		//정점 저장 변수

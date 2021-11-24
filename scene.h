@@ -1,6 +1,27 @@
 #pragma once
-
+#include "stdafx.h"
 enum GAME_STATUS { RUN, PAUSE, GAMEOVER };
+
+struct CAMERAPOS {
+	float x{};
+	float y{};
+	float z{};
+	glm::vec3 cameraPos{ glm::vec3(x, y, z) };
+	glm::vec3 cameraUp{ glm::vec3(0.0f, 1.0f, 0.0f) };
+};
+
+struct CAMERADIR {
+	float x{};
+	float y{};
+	float z{};
+	glm::vec3 cameraDirection{ glm::vec3(x, y, z) };
+};
+
+struct LIGHTPOS {
+	float x{};
+	float y{};
+	float z{};
+};
 
 class scene {
 public:
@@ -18,22 +39,10 @@ public:
 	glm::mat4 view{ glm::mat4(1.0f) };			//뷰 행렬
 
 	//카메라와 조명위치, 카메라가 바라보는 곳은 scene 생성 시 설정해주기
-	float cameraPosz{  };
-	float cameraPosx{  };
-	float cameraPosy{  };
+	struct CAMERAPOS CP;
+	struct CAMERADIR CD;
+	struct LIGHTPOS LP;
 
-	float cameraDirPosx{ 0.0f };
-	float cameraDirPosy{ 0.0f };
-	float cameraDirPosz{ 0.0f };
-
-	float lightPosz{  };
-	float lightPosx{  };
-	float lightPosy{  };
-
-	//카메라 관련 vec3들
-	glm::vec3 cameraPos{ glm::vec3(cameraPosx, cameraPosy, cameraPosz) };				//--- 카메라 위치
-	glm::vec3 cameraDirection{ glm::vec3(cameraDirPosx, 0.0f, cameraDirPosz) };	//--- 카메라 바라보는 방향
-	glm::vec3 cameraUp{ glm::vec3(0.0f, 1.0f, 0.0f) };
 
 public:
 	virtual ~scene();

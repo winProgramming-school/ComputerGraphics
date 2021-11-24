@@ -18,8 +18,9 @@
 #include <vector>
 
 // 프로그램에 필요한 추가 헤더
+#include "Shader.h"
+#include "Objloader.h"
 #include "GameFramework.h"
 #include "scene.h"
 #include "MenuScene.h"
-#include "Objloader.h"
-#include "Shader.h"
+

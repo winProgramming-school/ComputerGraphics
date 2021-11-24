@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "GameFramework.h"
 
 GLvoid Keyboard(unsigned char key, int x, int y);
 GLvoid TimerFunction(int value);

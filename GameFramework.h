@@ -1,6 +1,9 @@
 #pragma once
+#include "scene.h"
 
 enum SCENE { MENU, GAME, STAGE2 };
+
+class scene;
 
 class GameFramework
 {
