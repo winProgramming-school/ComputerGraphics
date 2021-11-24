@@ -93,8 +93,6 @@ void menuScene::Render()
 
 	//여기에 그리기
 
-	glDrawArrays(GL_TRIANGLES, 0, vertices_sphere.size());
-
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
 
