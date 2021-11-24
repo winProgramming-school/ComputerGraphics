@@ -50,7 +50,7 @@ void menuScene::init()
 	viewPos = glGetUniformLocation(ourShader.ID, "viewPos");
 
 	//투영행렬은 변화 없으므로 미리 설정
-	projection = glm::perspective(glm::radians(60.0f), (float)WINDOW_LENGTH / (float)WINDOW_HEIGHT, 0.3f, 100.0f);
+	projection = glm::perspective(glm::radians(60.0f), (float)WINDOW_LENGTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
 	glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, &projection[0][0]);
 
 	//조명의 색은 흰색으로 고정
@@ -58,8 +58,8 @@ void menuScene::init()
 
 	CP.x = 0.0f;
 	CP.y = 0.0f;
-	CP.z = 2.0f;
-	
+	CP.z = 10.0f;
+
 	LP.x = 0.0f;
 	LP.y = 3.0f;
 	LP.z = 0.0f;
@@ -73,7 +73,9 @@ void menuScene::processKey(unsigned char key, int x, int y)
 {
 	switch (key)
 	{
-
+	case 'q':
+		glutLeaveMainLoop();
+		break;
 	}
 }
 
@@ -84,9 +86,14 @@ void menuScene::Update(int value)
 
 void menuScene::Render()
 {
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	glEnable(GL_DEPTH_TEST);
 	glFrontFace(GL_CCW);
 	glEnable(GL_CULL_FACE);
+
+	ourShader.use();
 
 	//카메라 업데이트
 	CP.cameraPos = glm::vec3(CP.x, CP.y, CP.z);
@@ -101,8 +108,14 @@ void menuScene::Render()
 	glUniform3f(viewPos, CP.x, CP.y, CP.z);
 
 	//여기에 그리기
+
+	glBindVertexArray(VAO);
+	modelmat = glm::mat4(1.0f);
+	modelmat = glm::scale(modelmat, glm::vec3(0.2f, 0.2f, 0.2f));
+	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &modelmat[0][0]);
 	glUniform3f(fragColor, 1.0f, 1.0f, 0.0f);
 	glDrawArrays(GL_TRIANGLES, 0, vertices_sphere.size());
+
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
 

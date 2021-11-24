@@ -38,6 +38,7 @@ public:
 	glm::mat4 projection{ glm::mat4(1.0f) };	//투영행렬
 	glm::mat4 view{ glm::mat4(1.0f) };			//뷰 행렬
 
+
 	//카메라와 조명위치, 카메라가 바라보는 곳은 scene 생성 시 설정해주기
 	struct CAMERAPOS CP;
 	struct CAMERADIR CD;

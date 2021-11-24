@@ -8,8 +8,6 @@ GLvoid Reshape(int w, int h);
 GLvoid mouse(int button, int state, int x, int y);
 GLvoid mouseMotion(int x, int y);
 
-void InitBuffer();
-
 GameFramework GameManager;
 
 void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
@@ -34,7 +32,6 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
 
 
 	GameManager.Create();
-	InitBuffer();
 
 	glutMotionFunc(mouseMotion);
 	glutMouseFunc(mouse);
@@ -44,13 +41,9 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
 	glutTimerFunc(10, TimerFunction, 1);
 
 	glutMainLoop(); // 이벤트 처리 시작
-	//glDeleteShader(ourShader.ID);
 }
 GLvoid drawScene()
 {
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	GameManager.OnDraw();
 
 	glutSwapBuffers(); // 화면에 출력하기
@@ -80,7 +73,4 @@ GLvoid mouse(int button, int state, int x, int y) {
 }
 GLvoid mouseMotion(int x, int y) {
 
-}
-void InitBuffer() {
-	
 }
