@@ -15,11 +15,11 @@ void main(void)
 {
 	float ambientLight = 0.5;
 	vec3 ambient = ambientLight * lightColor;
-
+	float lightSize = 5.0;
 	vec3 norm = normalize(Normal);
 	vec3 lightDir = normalize(lightPos - FragPos);
 	float diffuseLight = max(dot(Normal, lightDir), 0.0);
-	vec3 diffuse = diffuseLight * lightColor;
+	vec3 diffuse = lightSize * diffuseLight * lightColor;
 
 	int shininess = 128;
 	vec3 viewDir = normalize(viewPos - FragPos);

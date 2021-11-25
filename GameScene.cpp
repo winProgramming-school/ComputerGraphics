@@ -56,13 +56,20 @@ void gameScene::init()
 	//조명의 색은 흰색으로 고정
 	glUniform3f(lightColor, 1.0f, 1.0f, 1.0f);
 
+	//카메라 위치
 	CP.x = 0.0f;
 	CP.y = 0.0f;
 	CP.z = 10.0f;
 
-	LP.x = 0.0f;
-	LP.y = 3.0f;
-	LP.z = 0.0f;
+	//빛 위치
+	LP.x = 1.0f;
+	LP.y = 1.0f;
+	LP.z = 1.0f;
+
+	//카메라 방향
+	CD.x = 0.0f;
+	CD.y = 0.0f;
+	CD.z = 0.0f;
 
 	glBindVertexArray(0);
 	glUseProgram(0);
@@ -112,7 +119,7 @@ void gameScene::Render()
 	modelmat = glm::mat4(1.0f);
 	modelmat = glm::scale(modelmat, glm::vec3(0.2f, 0.2f, 0.2f));
 	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &modelmat[0][0]);
-	glUniform3f(fragColor, 1.0f, 1.0f, 0.0f);
+	glUniform3f(fragColor, 0.990f, 0.622f, 0.659f);
 	glDrawArrays(GL_TRIANGLES, 0, vertices_sphere.size());
 
 	glDisable(GL_DEPTH_TEST);
