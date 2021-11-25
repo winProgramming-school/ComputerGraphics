@@ -3,14 +3,6 @@
 
 class Shader;
 
-namespace BALL {
-	//공의 위치
-	float x{0.0f};
-	float y{1.0f};
-	float z{0.0f};			//BALL은 z좌표가 계속 감소
-
-	float rAngle{ 0.0f };	//공 굴러가는 각도
-}
 
 class gameScene : public scene {
 public:
