@@ -64,9 +64,6 @@ void menuScene::init()
 	LP.y = 3.0f;
 	LP.z = 0.0f;
 
-
-
-
 	glBindVertexArray(0);
 	glUseProgram(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -81,7 +78,7 @@ void menuScene::processKey(unsigned char key, int x, int y)
 	}
 }
 
-void menuScene::Update(int value)
+void menuScene::Update(const float frameTime)
 {
 
 }

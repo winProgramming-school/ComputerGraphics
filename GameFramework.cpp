@@ -24,7 +24,7 @@ void GameFramework::Clear()
 
 void GameFramework::Create()
 {
-	curScene = new menuScene;	
+	curScene = new gameScene;	
 	nowscene = MENU;
 	curScene->init();
 }
@@ -34,9 +34,9 @@ void GameFramework::OnDraw()
 	curScene->Render();
 }
 
-void GameFramework::OnUpdate(int value)
+void GameFramework::OnUpdate(const float frameTime)
 {
-	curScene->Update(value);
+	curScene->Update(frameTime);
 	//여기서 현재 씬 업데이트
 }
 

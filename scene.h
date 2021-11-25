@@ -52,7 +52,7 @@ public:
 
 	virtual void processKey(unsigned char key, int x, int y) = 0;		//키 입력 처리
 
-	virtual void Update(int value) = 0;									//Timerfunction 역할
+	virtual void Update(const float frameTime) = 0;						//Timerfunction 역할
 
 	virtual void Render() = 0;											//DrawScene 역할
 };

@@ -59,7 +59,11 @@ GLvoid Keyboard(unsigned char key, int x, int y) {
 	glutPostRedisplay();
 }
 GLvoid TimerFunction(int value) {
-	GameManager.OnUpdate(value);
+	GameManager.curFrameTime = clock();
+	GameManager.OnUpdate(GameManager.GetTick());
+	glutTimerFunc(10, TimerFunction, 0);
+	GameManager.prevFrameTime = GameManager.curFrameTime;
+
 	glutPostRedisplay();
 }
 GLvoid mouse(int button, int state, int x, int y) {
