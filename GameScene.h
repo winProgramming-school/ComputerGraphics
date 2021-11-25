@@ -1,6 +1,8 @@
 #pragma once
 #include "scene.h"
 
+class Shader;
+
 namespace BALL {
 	//공의 위치
 	float x{0.0f};
@@ -10,7 +12,6 @@ namespace BALL {
 	float rAngle{ 0.0f };	//공 굴러가는 각도
 }
 
-class Shader;
 class gameScene : public scene {
 public:
 	std::vector< glm::vec3 > vertices_sphere;		//정점 저장 변수
@@ -23,8 +24,9 @@ public:
 	GLuint VBO_position[2];
 
 	Shader ourShader;
+
 public:
-	virtual ~gameScene() override;
+	~gameScene();
 
 	virtual void init() override;
 
