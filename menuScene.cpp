@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "MenuScene.h"
 
-
 extern GameFramework framework;
 
 menuScene::~menuScene()
