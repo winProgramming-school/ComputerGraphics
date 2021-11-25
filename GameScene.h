@@ -1,6 +1,5 @@
 #pragma once
 #include "scene.h"
-
 class Shader;
 
 typedef struct BALL {
