@@ -72,7 +72,9 @@ void gameScene::processKey(unsigned char key, int x, int y)
 {
 	switch (key)
 	{
-
+	case 'q':
+		glutLeaveMainLoop();
+		break;
 	}
 }
 
