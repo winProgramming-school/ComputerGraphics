@@ -17,7 +17,7 @@ public:
 	Shader ourShader;
 
 public:
-	virtual ~menuScene() override;
+	~menuScene();
 
 	virtual void init() override;
 

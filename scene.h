@@ -46,7 +46,7 @@ public:
 
 
 public:
-	virtual ~scene();
+	~scene();
 
 	virtual void init() = 0;											//여기서 필요한 obj 로드 InitBuffer() 개념
 
