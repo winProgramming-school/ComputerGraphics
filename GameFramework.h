@@ -22,7 +22,7 @@ public:
 
 	void Create();
 	void OnDraw();
-	void OnUpdate(int value);
+	void OnUpdate(const float frameTime);
 	void KeyBoard(unsigned char key, int x, int y);
 
 	float GetTick();

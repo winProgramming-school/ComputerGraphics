@@ -23,7 +23,7 @@ public:
 
 	virtual void processKey(unsigned char key, int x, int y) override;
 
-	virtual void Update(int value) override;
+	virtual void Update(const float frameTime) override;
 
 	virtual void Render() override;
 };
