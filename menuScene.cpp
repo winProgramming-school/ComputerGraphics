@@ -60,9 +60,11 @@ void menuScene::init()
 	CP.y = 0.0f;
 	CP.z = 10.0f;
 
-	LP.x = 0.0f;
+	LP.x = 3.0f;
 	LP.y = 3.0f;
 	LP.z = 0.0f;
+
+
 
 
 	glBindVertexArray(0);
