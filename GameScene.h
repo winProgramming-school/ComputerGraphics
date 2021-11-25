@@ -3,6 +3,13 @@
 
 class Shader;
 
+typedef struct BALL {
+	float x{0.0f};
+	float y{1.0f};
+	float z{0.0f};
+
+	float rAngle{0.0f};
+}BALL;
 
 class gameScene : public scene {
 public:
@@ -17,8 +24,14 @@ public:
 
 	Shader ourShader;
 
+	BALL ball;
+
+	int** map;
+
 public:
 	~gameScene();
+
+	void InitMap();
 
 	virtual void init() override;
 
