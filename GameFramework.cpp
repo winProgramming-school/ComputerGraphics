@@ -2,7 +2,10 @@
 #include "GameFramework.h"
 GameFramework::GameFramework()
 {
-
+	curScene = new gameScene;
+	nowscene = MENU;
+	prevFrameTime = 0.0f;
+	curFrameTime = 0.0f;
 }
 
 GameFramework::~GameFramework()
@@ -24,8 +27,7 @@ void GameFramework::Clear()
 
 void GameFramework::Create()
 {
-	curScene = new gameScene;	
-	nowscene = MENU;
+
 	curScene->init();
 }
 

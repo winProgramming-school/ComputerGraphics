@@ -8,10 +8,10 @@ class scene;
 class GameFramework
 {
 public:
-	scene* curScene;
-	SCENE nowscene;
-	clock_t prevFrameTime;
-	clock_t curFrameTime;
+	scene* curScene{};
+	SCENE nowscene{};
+	clock_t prevFrameTime{};
+	clock_t curFrameTime{};
 
 public:
 	GameFramework();
