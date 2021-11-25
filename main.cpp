@@ -30,7 +30,6 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
 	else
 		std::cout << "GLEW Initialized\n";
 
-
 	GameManager.Create();
 
 	glutMotionFunc(mouseMotion);

@@ -1,6 +1,5 @@
 #include "stdafx.h"
-
-
+#include <fstream>
 extern GameFramework framework;
 
 gameScene::~gameScene()
@@ -13,6 +12,46 @@ gameScene::~gameScene()
 	normals_sphere.clear();
 	normals_sphere.shrink_to_fit();
 	glDeleteShader(ourShader.ID);
+
+	for (int i = 0; i < 10; i++)
+		delete[] map[i];
+	delete[] map;
+}
+void gameScene::InitMap() {
+	std::ifstream fin{ "map1.txt" };
+	
+	map = new int*[3000];
+	for (int i = 0; i < 3000; ++i) {
+		map[i] = new int[5];
+	}
+
+	if (!fin) {
+		std::cout << "Error, no such file exists" << std::endl;
+		exit(100);
+	}
+	int num = 0;
+	char ch;
+	int tmp;
+	int i = 0;
+	while (fin >> ch && num != 3000) // 파일이 끝날때까지 한 줄씩 읽어오기
+	{
+		map[num][i] = ch - '0';
+		i++;
+
+		if (i % 5 == 0) {
+			num++;
+			i = 0;
+		}
+	}
+
+	for (int i = 0; i < 100; ++i) {
+		for (int j = 0; j < 5; ++j) {
+			std::cout << map[i][j];
+		}
+		std::cout << std::endl;
+	}
+
+	fin.close(); // 파일 닫기
 }
 
 void gameScene::init()
@@ -71,6 +110,8 @@ void gameScene::init()
 	CD.y = 0.0f;
 	CD.z = 0.0f;
 
+	InitMap();
+
 	glBindVertexArray(0);
 	glUseProgram(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -87,7 +128,7 @@ void gameScene::processKey(unsigned char key, int x, int y)
 
 void gameScene::Update(const float frametime)
 {
-
+	ball.rAngle += frametime * 250;
 }
 
 void gameScene::Render()
@@ -117,7 +158,9 @@ void gameScene::Render()
 
 	glBindVertexArray(VAO);
 	modelmat = glm::mat4(1.0f);
+	modelmat = glm::rotate(modelmat, glm::radians(ball.rAngle), glm::vec3(1.0f, 0.0f, 0.0f));
 	modelmat = glm::scale(modelmat, glm::vec3(0.2f, 0.2f, 0.2f));
+	//modelmat = glm::scale(modelmat, glm::vec3(1.0f, 0.2f, 0.2f));
 	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &modelmat[0][0]);
 	glUniform3f(fragColor, 0.8f, 0.619f, 1.0f);
 	glDrawArrays(GL_TRIANGLES, 0, vertices_sphere.size());

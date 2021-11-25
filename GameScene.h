@@ -2,6 +2,14 @@
 #include "scene.h"
 class Shader;
 
+typedef struct BALL {
+	float x{0.0f};
+	float y{1.0f};
+	float z{0.0f};
+
+	float rAngle{0.0f};
+}BALL;
+
 class gameScene : public scene {
 public:
 	std::vector< glm::vec3 > vertices_sphere;		//정점 저장 변수
@@ -15,8 +23,14 @@ public:
 
 	Shader ourShader;
 
+	BALL ball;
+
+	int** map;
+
 public:
 	~gameScene();
+
+	void InitMap();
 
 	virtual void init() override;
 

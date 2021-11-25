@@ -44,7 +44,6 @@ public:
 	struct CAMERADIR CD;
 	struct LIGHTPOS LP;
 
-
 public:
 	~scene();
 
