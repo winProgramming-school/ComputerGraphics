@@ -1,8 +1,6 @@
 #pragma once
 #include "scene.h"
-
 class Shader;
-
 
 class gameScene : public scene {
 public:

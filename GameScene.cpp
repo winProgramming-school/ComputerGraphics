@@ -119,7 +119,7 @@ void gameScene::Render()
 	modelmat = glm::mat4(1.0f);
 	modelmat = glm::scale(modelmat, glm::vec3(0.2f, 0.2f, 0.2f));
 	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &modelmat[0][0]);
-	glUniform3f(fragColor, 0.990f, 0.622f, 0.659f);
+	glUniform3f(fragColor, 0.8f, 0.619f, 1.0f);
 	glDrawArrays(GL_TRIANGLES, 0, vertices_sphere.size());
 
 	glDisable(GL_DEPTH_TEST);
