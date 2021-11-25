@@ -1,5 +1,6 @@
-#include "GameScene.h"
 #include "stdafx.h"
+#include "GameScene.h"
+
 
 extern GameFramework framework;
 
