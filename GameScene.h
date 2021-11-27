@@ -1,11 +1,16 @@
 #pragma once
 #include "scene.h"
+
+#define FLOOR_SIZE 0.3f
+
 class Shader;
 
+enum OBSTACLE{NORMAL, NONE, CONE};
+
 typedef struct BALL {
+	glm::mat4 modelmat{ glm::mat4(1.0f) };
 	float x{0.0f};
 	float y{1.0f};
-	float z{0.0f};
 
 	float rAngle{0.0f};
 }BALL;
@@ -31,8 +36,9 @@ public:
 
 	
 	Shader ourShader;
-
 	BALL ball;
+
+	float floor_FirstZ{};							//화면에 보이는 바닥 타일 중 제일 작은 z좌표값
 
 	int** map;
 

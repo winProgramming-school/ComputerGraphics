@@ -35,10 +35,12 @@ void gameScene::InitMap() {
 		std::cout << "Error, no such file exists" << std::endl;
 		exit(100);
 	}
+
 	int num = 0;
 	char ch;
 	int tmp;
 	int i = 0;
+
 	while (fin >> ch && num != 3000) // 파일이 끝날때까지 한 줄씩 읽어오기
 	{
 		map[num][i] = ch - '0';
@@ -234,6 +236,7 @@ void gameScene::Render()
 
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
+
 
 	glBindVertexArray(0);
 	glUseProgram(0);
