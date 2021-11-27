@@ -13,22 +13,26 @@ uniform vec3 viewPos;
 
 void main(void) 
 {
-	float ambientLight = 0.5;
-	vec3 ambient = ambientLight * lightColor;
-	float lightSize = 5.0;
-	vec3 norm = normalize(Normal);
-	vec3 lightDir = normalize(lightPos - FragPos);
-	float diffuseLight = max(dot(Normal, lightDir), 0.0);
-	vec3 diffuse = lightSize * diffuseLight * lightColor;
+   float ambientLight = 1.0;
+   vec3 ambient = ambientLight * lightColor;
 
-	int shininess = 128;
-	vec3 viewDir = normalize(viewPos - FragPos);
-	vec3 reflectDir = reflect(-lightDir, Normal);
-	float specularLight = max(dot(viewDir, reflectDir), 0.0);
-	specularLight = pow(specularLight, shininess);
-	vec3 specular = specularLight * lightColor;
+   vec3 norm = normalize(Normal);
+   vec3 lightDir = normalize(lightPos - FragPos);
+   float diffuseLight = max(dot(Normal, lightDir), 0.0);
+   float d = 0.1f;
+   vec3 diffuse = d * diffuseLight * lightColor;
 
-	vec3 result = (ambient + diffuse + specular) * inputColor;
+   int shininess = 64;
+   vec3 viewDir = normalize(viewPos - FragPos);
+   vec3 reflectDir = reflect(-lightDir, norm);
 
-	FragColor = vec4(result, 1.0f);
+   float specularLight = max(dot(viewDir, reflectDir), 0.0);
+   specularLight = pow(specularLight, shininess);
+
+   vec3 specular = specularLight * lightColor;
+
+   vec3 result = (ambient + diffuse + specular) * inputColor;
+   //vec3 result = (ambient + specular ) * inputColor;
+
+   FragColor = vec4(result, 1.0f);
 }

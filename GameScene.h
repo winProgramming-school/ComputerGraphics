@@ -10,22 +10,36 @@ typedef struct BALL {
 	float rAngle{0.0f};
 }BALL;
 
+
+
 class gameScene : public scene {
 public:
 	std::vector< glm::vec3 > vertices_sphere;		//정점 저장 변수
+	std::vector< glm::vec3 > vertices_floor;		//정점 저장 변수
 	std::vector< glm::vec2 > uvs_sphere;
+	std::vector< glm::vec2 > uvs_floor;
 	std::vector< glm::vec3 > normals_sphere;		//노멀 저장 변수
+	std::vector< glm::vec3 > normals_floor;		//노멀 저장 변수
 
 	glm::mat4 modelmat{ glm::mat4(1.0f) };			//모델 변환 행렬
+	glm::mat4 modelmat_f{ glm::mat4(1.0f) };			//모델 변환 행렬
 
 	GLuint VAO;
 	GLuint VBO_position[2];
+	GLuint VAO_f;
+	GLuint VBO_f_position[2];
 
+	
 	Shader ourShader;
 
 	BALL ball;
 
 	int** map;
+
+	float floor_xPos = -2.0f;
+	float floor_zPos = 0.0f;
+	float speed{};
+
 
 public:
 	~gameScene();
