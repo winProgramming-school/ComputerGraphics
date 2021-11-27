@@ -46,12 +46,12 @@ void gameScene::InitMap() {
 		}
 	}
 
-	for (int i = 0; i < 100; ++i) {
-		for (int j = 0; j < 5; ++j) {
-			std::cout << map[i][j];
-		}
-		std::cout << std::endl;
-	}
+	//for (int i = 0; i < 100; ++i) {
+	//	for (int j = 0; j < 5; ++j) {
+	//		std::cout << map[i][j];
+	//	}
+	//	std::cout << std::endl;
+	//}
 
 	fin.close(); // 파일 닫기
 }
@@ -62,22 +62,36 @@ void gameScene::init()
 
 //여기에 obj로드코드
 	loadOBJ("sphere_.obj", vertices_sphere, uvs_sphere, normals_sphere);
+	loadOBJ("box.obj", vertices_floor, uvs_floor, normals_floor);
 
 	//여기에 InitBuffer 내용
 	ourShader.use();
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(2, VBO_position);
+	glGenVertexArrays(2, VAO);
+	glGenBuffers(2, VBO_ball);
 
 	//정점버퍼
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO_position[0]);
+	glBindVertexArray(VAO[0]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_ball[0]);
 	glBufferData(GL_ARRAY_BUFFER, vertices_sphere.size() * sizeof(glm::vec3), &vertices_sphere[0], GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
 	glEnableVertexAttribArray(0);
 
 	//노멀버퍼
-	glBindBuffer(GL_ARRAY_BUFFER, VBO_position[1]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_ball[1]);
 	glBufferData(GL_ARRAY_BUFFER, normals_sphere.size() * sizeof(glm::vec3), &normals_sphere[0], GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+	glEnableVertexAttribArray(1);
+
+	//정점버퍼
+	glBindVertexArray(VAO[1]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_floor[0]);
+	glBufferData(GL_ARRAY_BUFFER, vertices_floor.size() * sizeof(glm::vec3), &vertices_floor[0], GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+	glEnableVertexAttribArray(0);
+
+	//노멀버퍼
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_floor[1]);
+	glBufferData(GL_ARRAY_BUFFER, normals_floor.size() * sizeof(glm::vec3), &normals_floor[0], GL_STATIC_DRAW);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
 	glEnableVertexAttribArray(1);
 
@@ -158,17 +172,26 @@ void gameScene::Render()
 
 	//여기에 그리기
 
-	glBindVertexArray(VAO);
-	modelmat = glm::mat4(1.0f);
-	modelmat = glm::rotate(modelmat, glm::radians(ball.rAngle), glm::vec3(1.0f, 0.0f, 0.0f));
-	modelmat = glm::scale(modelmat, glm::vec3(0.2f, 0.2f, 0.2f));
-	//modelmat = glm::scale(modelmat, glm::vec3(1.0f, 0.2f, 0.2f));
-	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &modelmat[0][0]);
+	//공 그리기
+	glBindVertexArray(VAO[0]);
+	ball.modelmat = glm::mat4(1.0f);
+	ball.modelmat = glm::rotate(ball.modelmat, glm::radians(ball.rAngle), glm::vec3(1.0f, 0.0f, 0.0f));
+	ball.modelmat = glm::scale(ball.modelmat, glm::vec3(0.2f, 0.2f, 0.2f));
+	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &ball.modelmat[0][0]);
 	glUniform3f(fragColor, 0.8f, 0.619f, 1.0f);
 	glDrawArrays(GL_TRIANGLES, 0, vertices_sphere.size());
 
+	//바닥 그리기
+	glBindVertexArray(VAO[1]);
+	Floor_modelmat = glm::mat4(1.0f);
+	Floor_modelmat = glm::scale(Floor_modelmat, glm::vec3(1.0f, 1.0f, 1.0f));
+	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &Floor_modelmat[0][0]);
+	glUniform3f(fragColor, 0.2f, 0.2f, 0.2f);
+	glDrawArrays(GL_TRIANGLES, 0, vertices_floor.size());
+
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
+
 
 	glBindVertexArray(0);
 	glUseProgram(0);
