@@ -50,12 +50,12 @@ void gameScene::InitMap() {
 		}
 	}
 
-	for (int i = 0; i < 100; ++i) {
-		for (int j = 0; j < 5; ++j) {
-			std::cout << map[i][j];
-		}
-		std::cout << std::endl;
-	}
+	//for (int i = 0; i < 100; ++i) {
+	//	for (int j = 0; j < 5; ++j) {
+	//		std::cout << map[i][j];
+	//	}
+	//	std::cout << std::endl;
+	//}
 
 	fin.close(); // 파일 닫기
 }
@@ -119,8 +119,12 @@ void gameScene::init()
 
 	//카메라 위치
 	CP.x = 0.0f;
-	CP.y = 11.0f;
+	CP.y = 10.0f;
 	CP.z = 11.0f;
+
+	//CP.x = 20.0f;
+	//CP.y = 10.0f;
+	//CP.z = 0.0f;
 
 	//빛 위치
 	LP.x = 1.0f;
@@ -154,13 +158,34 @@ void gameScene::processKey(unsigned char key, int x, int y)
 	case 'q':
 		glutLeaveMainLoop();
 		break;
+	case 'j':
+		ball.isJump = true;
+		break;
 	}
 }
 
 void gameScene::Update(const float frametime)
 {
-	ball.rAngle -= frametime * 250;
+	if (ball.rAngle >= 360.0f) {		//회전 각도 무한 증가 방지
+		ball.rAngle = 0.0f;
+	}
+
+	ball.rAngle += frametime * 250;
+
 	speed += 0.1f;
+
+	//여기는 Ball Jump 코드
+	if (ball.isJump) {			//점프 발판을 밟았다면
+		ball.y -= GRAVITY * frametime * 2;
+	}
+	else {						//점프 상태가 아니고 바닥과 닿아있지 않다면 중력 계속 작용
+		if(ball.y > 10.0f)	
+			ball.y += GRAVITY * frametime;
+	}
+
+	if (ball.y >= 21.0f) {		//점프 최고 높이 달성 시 떨어지게 만듦
+		ball.isJump = false;
+	}
 }
 
 void gameScene::Render()
@@ -182,14 +207,13 @@ void gameScene::Render()
 	glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
 
 
-
 	//여기에 그리기
 
 	//ball
 	glBindVertexArray(VAO);
 	modelmat = glm::mat4(1.0f);
 	modelmat = glm::scale(modelmat, glm::vec3(0.2f, 0.2f, 0.2f));
-	modelmat = glm::translate(modelmat, glm::vec3(0.0f, 10.0f, 0.0f));
+	modelmat = glm::translate(modelmat, glm::vec3(ball.x, ball.y, 0.0f));
 	modelmat = glm::rotate(modelmat, glm::radians(ball.rAngle), glm::vec3(1.0f, 0.0f, 0.0f));
 	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &modelmat[0][0]);
 	glUniform3f(fragColor, 0.8f, 0.619f, 1.0f);
@@ -227,10 +251,8 @@ void gameScene::Render()
 			modelmat_f = glm::translate(modelmat_f, glm::vec3(floor_xPos, 0.0f, floor_zPos));
 			glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &modelmat_f[0][0]);
 			glDrawArrays(GL_TRIANGLES, 0, vertices_floor.size());
-
 		}
 	}
-
 
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
