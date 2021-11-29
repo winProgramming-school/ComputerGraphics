@@ -51,6 +51,10 @@ public:
 
 	virtual void processKey(unsigned char key, int x, int y) = 0;		//키 입력 처리
 
+	virtual void Mouse(int button, int state, int x, int y) = 0;
+
+	virtual void MouseMotion(int x, int y) = 0;
+
 	virtual void Update(const float frameTime) = 0;						//Timerfunction 역할
 
 	virtual void Render() = 0;											//DrawScene 역할

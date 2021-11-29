@@ -120,7 +120,7 @@ void gameScene::init()
 	//카메라 위치
 	CP.x = 0.0f;
 	CP.y = 10.0f;
-	CP.z = 11.0f;
+	CP.z = 13.0f;
 
 	//CP.x = 20.0f;
 	//CP.y = 10.0f;
@@ -162,6 +162,26 @@ void gameScene::processKey(unsigned char key, int x, int y)
 		ball.isJump = true;
 		break;
 	}
+}
+
+void gameScene::Mouse(int button, int state, int x, int y)
+{
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+		if (mouse.mouse_down) {
+			mouse.mouse_down = false;
+			mouse.x = x;
+			mouse.y = y;
+		}
+	}
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
+		mouse.mouse_down = true;
+		ball.x += mouse.move;
+		mouse.move = 0.0f;
+	}
+}
+void gameScene::MouseMotion(int x, int y)
+{
+	mouse.move = (x - mouse.x) / 15;
 }
 
 void gameScene::Update(const float frametime)
@@ -213,7 +233,7 @@ void gameScene::Render()
 	glBindVertexArray(VAO);
 	modelmat = glm::mat4(1.0f);
 	modelmat = glm::scale(modelmat, glm::vec3(0.2f, 0.2f, 0.2f));
-	modelmat = glm::translate(modelmat, glm::vec3(ball.x, ball.y, 0.0f));
+	modelmat = glm::translate(modelmat, glm::vec3(ball.x + mouse.move, ball.y, 0.0f));
 	modelmat = glm::rotate(modelmat, glm::radians(ball.rAngle), glm::vec3(1.0f, 0.0f, 0.0f));
 	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &modelmat[0][0]);
 	glUniform3f(fragColor, 0.8f, 0.619f, 1.0f);

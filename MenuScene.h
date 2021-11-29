@@ -23,6 +23,10 @@ public:
 
 	virtual void processKey(unsigned char key, int x, int y) override;
 
+	virtual void Mouse(int button, int state, int x, int y) override;
+
+	virtual void MouseMotion(int x, int y) override;
+
 	virtual void Update(const float frameTime) override;
 
 	virtual void Render() override;

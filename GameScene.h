@@ -17,7 +17,14 @@ typedef struct BALL {
 	bool isJump{ false };
 }BALL;
 
+typedef struct MOUSE {
+	float x{};
+	float y{};
 
+	float move{};
+
+	bool mouse_down{ true };
+}MOUSE;
 
 class gameScene : public scene {
 public:
@@ -39,6 +46,7 @@ public:
 	
 	Shader ourShader;
 	BALL ball;
+	MOUSE mouse;
 
 	float floor_FirstZ{};							//화면에 보이는 바닥 타일 중 제일 작은 z좌표값
 
@@ -48,6 +56,7 @@ public:
 	float floor_zPos = 0.0f;
 	float speed{};
 
+	
 
 public:
 	~gameScene();
@@ -57,6 +66,10 @@ public:
 	virtual void init() override;
 
 	virtual void processKey(unsigned char key, int x, int y) override;
+
+	virtual void Mouse(int button, int state, int x, int y) override;
+
+	virtual void MouseMotion(int x, int y) override;
 
 	virtual void Update(const float frametime) override;
 

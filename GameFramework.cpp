@@ -46,7 +46,14 @@ void GameFramework::KeyBoard(unsigned char key, int x, int y)
 {
 	curScene->processKey(key, x, y);
 }
-
+void GameFramework::Mouse(int button, int state, int x, int y)
+{
+	curScene->Mouse(button, state, x, y);
+}
+void GameFramework::MouseMotion(int x, int y)
+{
+	curScene->MouseMotion(x, y);
+}
 float GameFramework::GetTick()
 {
 	return (float)(curFrameTime - prevFrameTime) / 1000;

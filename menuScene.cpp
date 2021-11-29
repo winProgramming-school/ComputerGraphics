@@ -78,6 +78,14 @@ void menuScene::processKey(unsigned char key, int x, int y)
 	}
 }
 
+void menuScene::Mouse(int button, int state, int x, int y)
+{
+
+}
+void menuScene::MouseMotion(int x, int y)
+{
+
+}
 void menuScene::Update(const float frameTime)
 {
 

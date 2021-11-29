@@ -24,6 +24,8 @@ public:
 	void OnDraw();
 	void OnUpdate(const float frameTime);
 	void KeyBoard(unsigned char key, int x, int y);
+	void Mouse(int button, int state, int x, int y);
+	void MouseMotion(int x, int y);
 
 	float GetTick();
 };

@@ -66,14 +66,11 @@ GLvoid TimerFunction(int value) {
 	glutPostRedisplay();
 }
 GLvoid mouse(int button, int state, int x, int y) {
-	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
-
-	}
-	if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
-
-	}
+	
+	GameManager.Mouse(button, state, x, y);
 	glutPostRedisplay();
 }
 GLvoid mouseMotion(int x, int y) {
-
+	GameManager.MouseMotion(x, y);
+	glutPostRedisplay();
 }
