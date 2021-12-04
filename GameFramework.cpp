@@ -2,7 +2,7 @@
 #include "GameFramework.h"
 GameFramework::GameFramework()
 {
-	curScene = new gameScene;
+	curScene = new menuScene;
 	nowscene = MENU;
 	prevFrameTime = 0.0f;
 	curFrameTime = 0.0f; 

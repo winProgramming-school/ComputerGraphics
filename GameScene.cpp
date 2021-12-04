@@ -1,6 +1,8 @@
 #include "stdafx.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 #include <fstream>
-extern GameFramework framework;
+extern GameFramework GameManager;
 
 gameScene::~gameScene()
 {
@@ -9,14 +11,23 @@ gameScene::~gameScene()
 	vertices_sphere.shrink_to_fit();
 	vertices_floor.clear();
 	vertices_floor.shrink_to_fit();
+	vertices_back.clear();
+	vertices_back.shrink_to_fit();
+
 	uvs_sphere.clear();
 	uvs_sphere.shrink_to_fit();
 	uvs_floor.clear();
 	uvs_floor.shrink_to_fit();
+	uvs_back.clear();
+	uvs_back.shrink_to_fit();
+
 	normals_sphere.clear();
 	normals_sphere.shrink_to_fit();
 	normals_floor.clear();
 	normals_floor.shrink_to_fit();
+	normals_back.clear();
+	normals_back.shrink_to_fit();
+
 	glDeleteShader(ourShader.ID);
 
 	for (int i = 0; i < 10; i++)
@@ -59,15 +70,33 @@ void gameScene::InitMap() {
 
 	fin.close(); // 파일 닫기
 }
-
+void gameScene::InitTexture() {
+	ourShader2.use();
+	int width;
+	int height;
+	int numberOfChannel;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	unsigned char* data1 = stbi_load("space.bmp", &width, &height, &numberOfChannel, 0);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data1);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	stbi_image_free(data1);
+	glUseProgram(0);
+}
 void gameScene::init()
 {
 	ourShader.InitShader("vertex.glsl", "fragment.glsl");		// 쉐이더 생성
+	ourShader2.InitShader("vertex2.glsl", "fragment2.glsl");		// 텍스처용쉐이더 생성
 
-//여기에 obj로드코드
+	//여기에 obj로드코드
 	loadOBJ("sphere_.obj", vertices_sphere, uvs_sphere, normals_sphere);
-	loadOBJ("MyCube.obj", vertices_floor, uvs_floor, normals_floor);
 	loadOBJ("term_ob1.obj", vertices_ob1, uvs_ob1, normals_ob1);
+	loadOBJ("MyCube.obj", vertices_floor, uvs_floor, normals_floor);
+	loadOBJ("wall.obj", vertices_back, uvs_back, normals_back);
 
 	//여기에 InitBuffer 내용
 	ourShader.use();
@@ -127,13 +156,10 @@ void gameScene::init()
 	glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, &projection[0][0]);
 
 	//카메라 위치
-	CP.x = 0.0f;
-	CP.y = 10.0f;
-	CP.z = 10.0f;
 
-	//CP.x = 20.0f;
-	//CP.y = 10.0f;
-	//CP.z = 0.0f;
+	CP.x = 0.0f;
+	CP.y = 5.0f;
+	CP.z = 15.0f;
 
 	//빛 위치
 	LP.x = 1.0f;
@@ -143,7 +169,7 @@ void gameScene::init()
 	//카메라 방향
 	CD.x = 0.0f;
 	CD.y = 0.0f;
-	CD.z = -2.0f;
+	CD.z = 0.0f;
 
 	//조명을 흰색으로 고정
 	glUniform3f(lightColor, 1.0f, 1.0f, 1.0f);
@@ -155,6 +181,37 @@ void gameScene::init()
 	glUniform3f(viewPos, CD.x, CD.y, CD.z);
 
 	InitMap();
+
+	//여기서부터 텍스처
+	ourShader2.use();
+
+	glGenVertexArrays(1, &VAO_back);
+	glGenBuffers(2, VBO_back_position);
+
+
+
+	//wall 정점버퍼
+	glBindVertexArray(VAO_back);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_back_position[0]);
+	glBufferData(GL_ARRAY_BUFFER, vertices_back.size() * sizeof(glm::vec3), &vertices_back[0], GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+	glEnableVertexAttribArray(0);
+
+	//wall uv버퍼
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_back_position[1]);
+	glBufferData(GL_ARRAY_BUFFER, uvs_back.size() * sizeof(glm::vec2), &uvs_back[0], GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float), 0);
+	glEnableVertexAttribArray(1);
+
+	viewLocation2 = glGetUniformLocation(ourShader.ID, "viewTransform");
+	projectionLocation2 = glGetUniformLocation(ourShader.ID, "projectionTransform");
+	modelLocation2 = glGetUniformLocation(ourShader.ID, "modelTransform");
+
+	glUniformMatrix4fv(projectionLocation2, 1, GL_FALSE, &projection[0][0]);
+
+	glUniformMatrix4fv(viewLocation2, 1, GL_FALSE, glm::value_ptr(view));
+
+	InitTexture();
 
 	glBindVertexArray(0);
 	glUseProgram(0);
@@ -212,14 +269,15 @@ void gameScene::Update(const float frametime)
 			ball.y += GRAVITY * frametime * 2;
 	}
 
-	if (ball.y >= 22.0f) {		//점프 최고 높이 달성 시 떨어지게 만듦
+	if (ball.y >= 21.0f) {		//점프 최고 높이 달성 시 떨어지게 만듦
 		ball.isJump = false;
 	}
 }
 
 void gameScene::Render()
 {
-	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	//glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glEnable(GL_DEPTH_TEST);
@@ -334,8 +392,6 @@ void gameScene::Render()
 			glDrawArrays(GL_TRIANGLES, 0, vertices_floor.size());
 		}
 	}
-
-
 
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);

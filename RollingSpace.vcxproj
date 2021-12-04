@@ -156,11 +156,14 @@
     <ClInclude Include="Objloader.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="stb_image.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="fragment.glsl" />
+    <None Include="fragment2.glsl" />
     <None Include="vertex.glsl" />
+    <None Include="vertex2.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

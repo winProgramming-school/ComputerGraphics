@@ -16,6 +16,10 @@ public:
 
 	Shader ourShader;
 
+	int balljump_count{ 0 };
+	bool ballJump{ false };
+	float ball_y{ -1.0f };
+
 public:
 	~menuScene();
 
