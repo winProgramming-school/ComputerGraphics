@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "MenuScene.h"
 
-extern GameFramework framework;
+extern GameFramework GameManager;
 
 menuScene::~menuScene()
 {
@@ -60,9 +60,24 @@ void menuScene::init()
 	CP.y = 0.0f;
 	CP.z = 10.0f;
 
-	LP.x = 3.0f;
-	LP.y = 3.0f;
-	LP.z = 0.0f;
+	//빛 위치
+	LP.x = 1.0f;
+	LP.y = 1.5f;
+	LP.z = 1.0f;
+
+	//카메라 방향
+	CD.x = 0.0f;
+	CD.y = 0.0f;
+	CD.z = 0.0f;
+
+	//조명을 흰색으로 고정
+	glUniform3f(lightColor, 1.0f, 1.0f, 1.0f);
+
+	//조명 위치 초기화
+	glUniform3f(lightPos, LP.x, LP.y, LP.z);
+
+	//viewPos(시선벡터) 초기화
+	glUniform3f(viewPos, CD.x, CD.y, CD.z);
 
 	glBindVertexArray(0);
 	glUseProgram(0);
@@ -74,6 +89,13 @@ void menuScene::processKey(unsigned char key, int x, int y)
 	{
 	case 'q':
 		glutLeaveMainLoop();
+		break;
+	case 's':
+		scene * scene = GameManager.curScene;   ////현재 씬을 tmp에 넣고 지워줌
+		GameManager.curScene = new gameScene;
+		GameManager.curScene->init();
+		GameManager.nowscene = GAME;
+		delete scene;
 		break;
 	}
 }
@@ -88,12 +110,28 @@ void menuScene::MouseMotion(int x, int y)
 }
 void menuScene::Update(const float frameTime)
 {
+	if (balljump_count >= 100 && !ballJump) {
+		balljump_count = 0;
+		ballJump = true;
+	}
+	balljump_count++;
 
+	if (ballJump) {			//점프 발판을 밟았다면
+		ball_y -= GRAVITY * frameTime;
+	}
+	else {						//점프 상태가 아니고 바닥과 닿아있지 않다면 중력 계속 작용
+		if (ball_y > -1.0f)
+			ball_y += GRAVITY * frameTime/ (1.5f);
+	}
+
+	if (ball_y >= 4.0f) {		//점프 최고 높이 달성 시 떨어지게 만듦
+		ballJump = false;
+	}
 }
 
 void menuScene::Render()
 {
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glEnable(GL_DEPTH_TEST);
@@ -108,19 +146,15 @@ void menuScene::Render()
 	view = glm::lookAt(CP.cameraPos, CD.cameraDirection, CP.cameraUp);
 	glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
 	
-	//조명 위치 업데이트(조명 안 옮길거면 Init으로 옮겨도 되는 코드)
-	glUniform3f(lightPos, LP.x, LP.y, LP.z);
-
-	//바라보는 방향..?
-	glUniform3f(viewPos, CP.x, CP.y, CP.z);
 
 	//여기에 그리기
 
 	glBindVertexArray(VAO);
 	modelmat = glm::mat4(1.0f);
-	modelmat = glm::scale(modelmat, glm::vec3(0.2f, 0.2f, 0.2f));
+	modelmat = glm::translate(modelmat, glm::vec3(3.0f, ball_y, 0.0f));
+	modelmat = glm::scale(modelmat, glm::vec3(0.1f, 0.1f, 0.1f));
 	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &modelmat[0][0]);
-	glUniform3f(fragColor, 1.0f, 1.0f, 0.0f);
+	glUniform3f(fragColor, 0.8f, 0.619f, 1.0f);
 	glDrawArrays(GL_TRIANGLES, 0, vertices_sphere.size());
 
 	glDisable(GL_DEPTH_TEST);

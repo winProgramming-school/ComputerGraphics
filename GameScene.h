@@ -30,10 +30,15 @@ class gameScene : public scene {
 public:
 	std::vector< glm::vec3 > vertices_sphere;		//정점 저장 변수
 	std::vector< glm::vec3 > vertices_floor;		//정점 저장 변수
+	std::vector< glm::vec3 > vertices_back;		//정점 저장 변수
+
 	std::vector< glm::vec2 > uvs_sphere;
 	std::vector< glm::vec2 > uvs_floor;
-	std::vector< glm::vec3 > normals_sphere;		//노멀 저장 변수
+	std::vector< glm::vec2 > uvs_back;
+
+	std::vector< glm::vec3 > normals_sphere;	//노멀 저장 변수
 	std::vector< glm::vec3 > normals_floor;		//노멀 저장 변수
+	std::vector< glm::vec3 > normals_back;		//노멀 저장 변수
 
 	glm::mat4 modelmat{ glm::mat4(1.0f) };			//모델 변환 행렬
 	glm::mat4 modelmat_f{ glm::mat4(1.0f) };			//모델 변환 행렬
@@ -42,9 +47,12 @@ public:
 	GLuint VBO_position[2];
 	GLuint VAO_f;
 	GLuint VBO_f_position[2];
-
+	GLuint VAO_back;
+	GLuint VBO_back_position[2];
 	
 	Shader ourShader;
+	Shader ourShader2;
+
 	BALL ball;
 	MOUSE mouse;
 
@@ -56,12 +64,16 @@ public:
 	float floor_zPos = 0.0f;
 	float speed{};
 
-	
+
+	//텍스처 쉐이더 uniform 변수 위치
+	unsigned int viewLocation2, projectionLocation2, modelLocation2;
+	unsigned int texture;
 
 public:
 	~gameScene();
 
 	void InitMap();
+	void InitTexture();
 
 	virtual void init() override;
 
