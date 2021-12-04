@@ -13,7 +13,7 @@ uniform vec3 viewPos;
 
 void main(void) 
 {
-   float ambientLight = 1.0;
+   float ambientLight = 0.7;
    vec3 ambient = ambientLight * lightColor;
 
    vec3 norm = normalize(Normal);
@@ -22,7 +22,7 @@ void main(void)
    float d = 0.1f;
    vec3 diffuse = d * diffuseLight * lightColor;
 
-   int shininess = 64;
+   int shininess = 32;
    vec3 viewDir = normalize(viewPos - FragPos);
    vec3 reflectDir = reflect(-lightDir, norm);
 

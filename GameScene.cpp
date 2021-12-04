@@ -66,41 +66,50 @@ void gameScene::init()
 
 //여기에 obj로드코드
 	loadOBJ("sphere_.obj", vertices_sphere, uvs_sphere, normals_sphere);
+	loadOBJ("MyCube.obj", vertices_floor, uvs_floor, normals_floor);
+	loadOBJ("term_ob1.obj", vertices_ob1, uvs_ob1, normals_ob1);
 
 	//여기에 InitBuffer 내용
 	ourShader.use();
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(2, VBO_position);
-
 	//ball 정점버퍼
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO_position[0]);
 	glBufferData(GL_ARRAY_BUFFER, vertices_sphere.size() * sizeof(glm::vec3), &vertices_sphere[0], GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
 	glEnableVertexAttribArray(0);
-
 	//ball 노멀버퍼
 	glBindBuffer(GL_ARRAY_BUFFER, VBO_position[1]);
 	glBufferData(GL_ARRAY_BUFFER, normals_sphere.size() * sizeof(glm::vec3), &normals_sphere[0], GL_STATIC_DRAW);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
 	glEnableVertexAttribArray(1);
 
-	loadOBJ("MyCube.obj", vertices_floor, uvs_floor, normals_floor);
-
-
 	glGenVertexArrays(1, &VAO_f);
 	glGenBuffers(2, VBO_f_position);
-
 	//floor 정점버퍼
 	glBindVertexArray(VAO_f);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO_f_position[0]);
 	glBufferData(GL_ARRAY_BUFFER, vertices_floor.size() * sizeof(glm::vec3), &vertices_floor[0], GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
 	glEnableVertexAttribArray(0);
-
 	//floor 노멀버퍼
 	glBindBuffer(GL_ARRAY_BUFFER, VBO_f_position[1]);
 	glBufferData(GL_ARRAY_BUFFER, normals_floor.size() * sizeof(glm::vec3), &normals_floor[0], GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+	glEnableVertexAttribArray(1);
+
+	glGenVertexArrays(1, &VAO_ob1);
+	glGenBuffers(2, VBO_ob1_position);
+	//장애물1(가시) 정점버퍼
+	glBindVertexArray(VAO_ob1);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_ob1_position[0]);
+	glBufferData(GL_ARRAY_BUFFER, vertices_ob1.size() * sizeof(glm::vec3), &vertices_ob1[0], GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+	glEnableVertexAttribArray(0);
+	//장애물1(가시) 노멀버퍼
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_ob1_position[1]);
+	glBufferData(GL_ARRAY_BUFFER, normals_ob1.size() * sizeof(glm::vec3), &normals_ob1[0], GL_STATIC_DRAW);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
 	glEnableVertexAttribArray(1);
 
@@ -120,7 +129,7 @@ void gameScene::init()
 	//카메라 위치
 	CP.x = 0.0f;
 	CP.y = 10.0f;
-	CP.z = 13.0f;
+	CP.z = 10.0f;
 
 	//CP.x = 20.0f;
 	//CP.y = 10.0f;
@@ -134,7 +143,7 @@ void gameScene::init()
 	//카메라 방향
 	CD.x = 0.0f;
 	CD.y = 0.0f;
-	CD.z = 0.0f;
+	CD.z = -2.0f;
 
 	//조명을 흰색으로 고정
 	glUniform3f(lightColor, 1.0f, 1.0f, 1.0f);
@@ -192,18 +201,18 @@ void gameScene::Update(const float frametime)
 
 	ball.rAngle += frametime * 250;
 
-	speed += 0.1f;
+	speed += 0.15f;
 
 	//여기는 Ball Jump 코드
 	if (ball.isJump) {			//점프 발판을 밟았다면
 		ball.y -= GRAVITY * frametime * 2;
 	}
 	else {						//점프 상태가 아니고 바닥과 닿아있지 않다면 중력 계속 작용
-		if(ball.y > 10.0f)	
-			ball.y += GRAVITY * frametime;
+		if (ball.y > 10.0f)
+			ball.y += GRAVITY * frametime * 2;
 	}
 
-	if (ball.y >= 21.0f) {		//점프 최고 높이 달성 시 떨어지게 만듦
+	if (ball.y >= 22.0f) {		//점프 최고 높이 달성 시 떨어지게 만듦
 		ball.isJump = false;
 	}
 }
@@ -232,7 +241,7 @@ void gameScene::Render()
 	//ball
 	glBindVertexArray(VAO);
 	modelmat = glm::mat4(1.0f);
-	modelmat = glm::scale(modelmat, glm::vec3(0.2f, 0.2f, 0.2f));
+	modelmat = glm::scale(modelmat, glm::vec3(0.15f, 0.15f, 0.15f));
 	modelmat = glm::translate(modelmat, glm::vec3(ball.x + mouse.move, ball.y, 0.0f));
 	modelmat = glm::rotate(modelmat, glm::radians(ball.rAngle), glm::vec3(1.0f, 0.0f, 0.0f));
 	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &modelmat[0][0]);
@@ -240,39 +249,93 @@ void gameScene::Render()
 	glDrawArrays(GL_TRIANGLES, 0, vertices_sphere.size());
 
 	//floor
+
 	glBindVertexArray(VAO_f);
 
-	for (int i = 0; i < 100; i++) {
+	for (int i = 0; i < 3000; i++) {
 		floor_zPos = i * -1.0f + speed;
 		for (int j = 0; j < 5; j++) {
 			modelmat_f = glm::mat4(1.0f);
+
+			//맵과 연결
+			if (map[i][j] == 0) {//0 : base (기본 땅)
+
+				glUniform3f(fragColor, 0.8f, 1.0f, 1.0f);//연하늘
+				sizeOfWallx = 3.0f;
+				sizeOfWally = 0.01f;
+				sizeOfWallz = 3.0f;
+			}
+			else if (map[i][j] == 1) {//1 : 장애물(닿으면 죽음)
+				glUniform3f(fragColor, 0.8f, 0.0f, 0.0f);
+				sizeOfWallx = 3.0f;
+				sizeOfWally = 2.0f;
+				sizeOfWallz = 3.0f;
+
+			}
+			else if (map[i][j] == 2) {//2 : 벽, 움직이고
+				glUniform3f(fragColor, 0.4f, 0.4f, 0.4f);
+				sizeOfWallx = 3.0f;
+				sizeOfWally = 5.0f;
+				sizeOfWallz = 3.0f;
+
+			}
+			else if (map[i][j] == 3) {//3 : 점프 발판
+
+				glUniform3f(fragColor, 0.0f, 0.0f, 1.0f);//블루
+				sizeOfWallx = 3.0f;
+				sizeOfWally = 0.01f;
+				sizeOfWallz = 3.0f;
+			}
+			else if (map[i][j] == 4) {//4 : 빈 공간
+
+				glUniform3f(fragColor, 0.0f, 0.0f, 0.0f);
+				sizeOfWallx = 3.0f;
+				sizeOfWally = 0.00f;
+				sizeOfWallz = 3.0f;
+			}
+			else {
+				glUniform3f(fragColor, 1.0f, 1.0f, 1.0f);
+				sizeOfWallx = 3.0f;
+				sizeOfWally = 0.01f;
+				sizeOfWallz = 3.0f;
+			}
+
+
 			if (j == 0) {
 				floor_xPos = -2.0f;
-				glUniform3f(fragColor, 1.0f, 0.0f, 0.0f);//빨
 			}
 			else if (j == 1) {
 				floor_xPos = -1.0f;
-				glUniform3f(fragColor, 1.0f, 1.0f, 0.0f);//노
 			}
 			else if (j == 2) {
 				floor_xPos = 0.0f;
-				glUniform3f(fragColor, 0.8f, 1.0f, 1.0f);//연하늘
 			}
 			else if (j == 3) {
 				floor_xPos = 1.0f;
-				glUniform3f(fragColor, 0.0f, 0.99f, 0.0f);//그린
 			}
 			else if (j == 4) {
 				floor_xPos = 2.0f;
-				glUniform3f(fragColor, 0.0f, 0.0f, 1.0f);//블루
 			}
+			//보류
+			//if (map[i][j] == 1) {//1 : 장애물(닿으면 죽음)
+			//	/*modelmat_ob1 = glm::mat4(1.0f);
+			//	glBindVertexArray(VAO_ob1);
+			//	glUniform3f(fragColor, 1.0f, 1.0f, 0.0f);
+			//	modelmat_ob1 = glm::scale(modelmat_ob1, glm::vec3(floor_xPos, 1.0f, floor_zPos));
+			//	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &modelmat_ob1[0][0]);
+			//	glDrawArrays(GL_TRIANGLES, 0, vertices_ob1.size());*/
+			//}
+			//else {
+			//}
 			//modelmat_f = glm::rotate(modelmat_f, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-			modelmat_f = glm::scale(modelmat_f, glm::vec3(3.0f, 0.01f, 3.0f));
+			modelmat_f = glm::scale(modelmat_f, glm::vec3(sizeOfWallx, sizeOfWally, sizeOfWallz));
 			modelmat_f = glm::translate(modelmat_f, glm::vec3(floor_xPos, 0.0f, floor_zPos));
 			glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &modelmat_f[0][0]);
 			glDrawArrays(GL_TRIANGLES, 0, vertices_floor.size());
 		}
 	}
+
+
 
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
