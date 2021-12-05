@@ -74,11 +74,9 @@ public:
 	float sizeOfWally = 0.01f;
 	float sizeOfWallz = 3.0f;
 	
-
-
-	//텍스처 쉐이더 uniform 변수 위치
-	unsigned int viewLocation2, projectionLocation2, modelLocation2;
-	unsigned int texture;
+	////텍스처 쉐이더 uniform 변수 위치
+	//unsigned int viewLocation2, projectionLocation2, modelLocation2;
+	//unsigned int texture;
 
 public:
 	~gameScene();

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "MenuScene.h"
-
+#include "stb_image.h"
 extern GameFramework GameManager;
 
 menuScene::~menuScene()
@@ -12,15 +12,44 @@ menuScene::~menuScene()
 	uvs_sphere.shrink_to_fit();
 	normals_sphere.clear();
 	normals_sphere.shrink_to_fit();
+
+	vertices_back.clear();
+	vertices_back.shrink_to_fit();
+	uvs_back.clear();
+	uvs_back.shrink_to_fit();
+	normals_back.clear();
+	normals_back.shrink_to_fit();
+
 	glDeleteShader(ourShader.ID);
+}
+
+void menuScene::InitTexture() {
+	ourShader2.use();
+	glActiveTexture(GL_TEXTURE0);
+	int width;
+	int height;
+	int numberOfChannel;
+	//glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, GL_TEXTURE0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	unsigned char* data1 = stbi_load("menuScene.bmp", &width, &height, &numberOfChannel, 0);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data1);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	stbi_image_free(data1);
+	glUseProgram(0);
+
 }
 
 void menuScene::init()
 {
 	ourShader.InitShader("vertex.glsl", "fragment.glsl");		// 쉐이더 생성
-					 											
+
 	//여기에 obj로드코드
 	loadOBJ("sphere_.obj", vertices_sphere, uvs_sphere, normals_sphere);
+	loadOBJ("wall.obj", vertices_back, uvs_back, normals_back);
 
 	//여기에 InitBuffer 내용
 	ourShader.use();
@@ -79,6 +108,27 @@ void menuScene::init()
 	//viewPos(시선벡터) 초기화
 	glUniform3f(viewPos, CD.x, CD.y, CD.z);
 
+	ourShader2.InitShader("vertex2.glsl", "fragment2.glsl");		// 텍스처용쉐이더 생성
+	ourShader2.use();
+
+	glGenVertexArrays(1, &VAO_back);
+	glGenBuffers(2, VBO_back_position);
+
+	//wall 정점버퍼
+	glBindVertexArray(VAO_back);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_back_position[0]);
+	glBufferData(GL_ARRAY_BUFFER, vertices_back.size() * sizeof(glm::vec3), &vertices_back[0], GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+	glEnableVertexAttribArray(0);
+
+	//wall uv버퍼
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_back_position[1]);
+	glBufferData(GL_ARRAY_BUFFER, uvs_back.size() * sizeof(glm::vec2), &uvs_back[0], GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
+	glEnableVertexAttribArray(1);
+
+	InitTexture();
+
 	glBindVertexArray(0);
 	glUseProgram(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -133,6 +183,15 @@ void menuScene::Render()
 {
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	ourShader2.use();
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, GL_TEXTURE0);
+	int tLocation1 = glGetUniformLocation(ourShader2.ID, "texture1");
+	glUniform1i(tLocation1, 0);
+	glBindVertexArray(VAO_back);
+	glDrawArrays(GL_TRIANGLES, 0, vertices_back.size());
+
 
 	glEnable(GL_DEPTH_TEST);
 	glFrontFace(GL_CCW);

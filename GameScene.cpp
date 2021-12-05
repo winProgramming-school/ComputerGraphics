@@ -72,25 +72,26 @@ void gameScene::InitMap() {
 }
 void gameScene::InitTexture() {
 	ourShader2.use();
+	glActiveTexture(GL_TEXTURE0);
 	int width;
 	int height;
 	int numberOfChannel;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	//glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, GL_TEXTURE0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	unsigned char* data1 = stbi_load("space.bmp", &width, &height, &numberOfChannel, 0);
+	unsigned char* data1 = stbi_load("1.bmp", &width, &height, &numberOfChannel, 0);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data1);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	stbi_image_free(data1);
 	glUseProgram(0);
+	
 }
 void gameScene::init()
 {
 	ourShader.InitShader("vertex.glsl", "fragment.glsl");		// 쉐이더 생성
-	ourShader2.InitShader("vertex2.glsl", "fragment2.glsl");		// 텍스처용쉐이더 생성
 
 	//여기에 obj로드코드
 	loadOBJ("sphere_.obj", vertices_sphere, uvs_sphere, normals_sphere);
@@ -183,12 +184,11 @@ void gameScene::init()
 	InitMap();
 
 	//여기서부터 텍스처
+	ourShader2.InitShader("vertex2.glsl", "fragment2.glsl");		// 텍스처용쉐이더 생성
 	ourShader2.use();
 
 	glGenVertexArrays(1, &VAO_back);
 	glGenBuffers(2, VBO_back_position);
-
-
 
 	//wall 정점버퍼
 	glBindVertexArray(VAO_back);
@@ -200,16 +200,14 @@ void gameScene::init()
 	//wall uv버퍼
 	glBindBuffer(GL_ARRAY_BUFFER, VBO_back_position[1]);
 	glBufferData(GL_ARRAY_BUFFER, uvs_back.size() * sizeof(glm::vec2), &uvs_back[0], GL_STATIC_DRAW);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float), 0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), 0);
 	glEnableVertexAttribArray(1);
 
-	viewLocation2 = glGetUniformLocation(ourShader.ID, "viewTransform");
-	projectionLocation2 = glGetUniformLocation(ourShader.ID, "projectionTransform");
-	modelLocation2 = glGetUniformLocation(ourShader.ID, "modelTransform");
-
-	glUniformMatrix4fv(projectionLocation2, 1, GL_FALSE, &projection[0][0]);
-
-	glUniformMatrix4fv(viewLocation2, 1, GL_FALSE, glm::value_ptr(view));
+	//viewLocation2 = glGetUniformLocation(ourShader2.ID, "viewTransform");
+	//projectionLocation2 = glGetUniformLocation(ourShader2.ID, "projectionTransform");
+	//modelLocation2 = glGetUniformLocation(ourShader2.ID, "modelTransform");
+	//glUniformMatrix4fv(projectionLocation2, 1, GL_FALSE, &projection[0][0]);
+	//glUniformMatrix4fv(viewLocation2, 1, GL_FALSE, glm::value_ptr(view));
 
 	InitTexture();
 
@@ -280,9 +278,18 @@ void gameScene::Render()
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	ourShader2.use();
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, GL_TEXTURE0);
+	int tLocation = glGetUniformLocation(ourShader2.ID, "texture1");
+	glUniform1i(tLocation, 0);
+	glBindVertexArray(VAO_back);
+	glDrawArrays(GL_TRIANGLES, 0, vertices_back.size());
+
 	glEnable(GL_DEPTH_TEST);
 	glFrontFace(GL_CCW);
 	glEnable(GL_CULL_FACE);
+
 
 	ourShader.use();
 
@@ -295,6 +302,7 @@ void gameScene::Render()
 
 
 	//여기에 그리기
+	
 
 	//ball
 	glBindVertexArray(VAO);
