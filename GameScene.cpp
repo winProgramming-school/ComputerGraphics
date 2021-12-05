@@ -252,20 +252,23 @@ void gameScene::MouseMotion(int x, int y)
 
 void gameScene::Update(const float frametime)
 {
-	//인덱스 조정
-	if ((int)speed > 10) {
-		index = (int)speed - 10;
+	// 공이 떨어졌으면 update 중단
+	if (!ball.falling) {
+		//인덱스 조정
+		if ((int)speed > 10) {
+			index = (int)speed - 10;
+		}
+
+		if (ball.rAngle >= 360.0f) {		//회전 각도 무한 증가 방지
+			ball.rAngle = 0.0f;
+		}
+
+		ball.rAngle += frametime * 250;
+
+		// 발판 이동
+		speed += 10 * frametime;
 	}
 
-	if (ball.rAngle >= 360.0f) {		//회전 각도 무한 증가 방지
-		ball.rAngle = 0.0f;
-	}
-
-	ball.rAngle += frametime * 250;
-
-	// 발판 이동
-	speed += 10*frametime;
-	
 
 	
 	// 여기는 Ball Jump 코드
@@ -273,7 +276,7 @@ void gameScene::Update(const float frametime)
 		ball.y -= GRAVITY * frametime * 2;
 	}
 	else {						//점프 상태가 아니고 바닥과 닿아있지 않다면 중력 계속 작용
-		if (ball.y > 1.3f)
+		if (ball.y > 1.3f || ball.falling)
 			ball.y += GRAVITY * frametime * 2;
 	}
 
@@ -293,6 +296,7 @@ void gameScene::Update(const float frametime)
 			}
 		}
 
+		// 장애물
 		else if (map[index + 10][i] == 1) {
 			if (center_x - 1.5f <= ball.x + mouse.move && center_x + 1.5 >= ball.x + mouse.move
 				&& ball.y - 1.2f <= 2.0f) {
@@ -300,7 +304,13 @@ void gameScene::Update(const float frametime)
 				ball.g = 1.0f;
 				ball.b = 0.0f;
 			}
+		}
 
+		// 빈 공간
+		else if (map[index + 10][i] == 4) {
+			if (center_x - 1.5f <= ball.x + mouse.move && center_x + 1.5 >= ball.x + mouse.move) {
+				ball.falling = true;
+			}
 		}
 	}
 }

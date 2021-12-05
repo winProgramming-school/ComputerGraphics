@@ -18,6 +18,7 @@ typedef struct BALL {
 	float rAngle{0.0f};
 
 	bool isJump{ false };
+	bool falling{ false };
 }BALL;
 
 typedef struct MOUSE {
