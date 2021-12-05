@@ -283,12 +283,24 @@ void gameScene::Update(const float frametime)
 
 	// 공과 각종 장애물 충돌
 	for (int i = 0; i < 5; ++i) {
-		float center = -6.0f + i * 3.0f;
+		float center_x = -6.0f + i * 3.0f;
+		float center_z = ((index + 10.0f) * -1.0f + speed) * 3;
 
+		// 점프 발판
 		if (map[index + 10][i] == 3) {
-			if (center - 1.5f <= ball.x && center + 1.5 >= ball.x) {
+			if (center_x - 1.5f <= ball.x + mouse.move && center_x + 1.5 >= ball.x + mouse.move) {
 				ball.isJump = true;
 			}
+		}
+
+		else if (map[index + 10][i] == 1) {
+			if (center_x - 1.5f <= ball.x + mouse.move && center_x + 1.5 >= ball.x + mouse.move
+				&& ball.y - 1.2f <= 2.0f) {
+				ball.r = 0.0f;
+				ball.g = 1.0f;
+				ball.b = 0.0f;
+			}
+
 		}
 	}
 }
@@ -322,7 +334,7 @@ void gameScene::Render()
 	modelmat = glm::rotate(modelmat, glm::radians(ball.rAngle), glm::vec3(1.0f, 0.0f, 0.0f));
 	modelmat = glm::scale(modelmat, glm::vec3(0.15f, 0.15f, 0.15f));
 	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &modelmat[0][0]);
-	glUniform3f(fragColor, 0.8f, 0.619f, 1.0f);
+	glUniform3f(fragColor, ball.r, ball.g, ball.b);
 	glDrawArrays(GL_TRIANGLES, 0, vertices_sphere.size());
 
 	//floor
@@ -407,26 +419,34 @@ void gameScene::Render()
 			modelmat_f = glm::scale(modelmat_f, glm::vec3(sizeOfWallx, sizeOfWally, sizeOfWallz));
 			modelmat_f = glm::translate(modelmat_f, glm::vec3(floor_xPos, 0.0f, floor_zPos));
 
+			if (map[i][j] == 1) {
+				glm::vec4 tmp;
+				float max_z{};
+				float max_x{};
+				float max_y{};
+				float min_z{};
+				float min_y{};
+				float min_x{};
 
-			glm::vec4 tmp;
-			float max_z{};
-			float max_x{};
-			float max_y{};
-			float min_z{};
-			float min_y{};
-			float min_x{};
+				tmp = modelmat_f * glm::vec4(vertices_floor[0], 1);
+				max_x = tmp.x;
+				min_x = tmp.x;
+				min_z = tmp.z;
+				max_z = tmp.z;
 
-			tmp = modelmat_f * glm::vec4(vertices_floor[0], 1);
-			max_x = tmp.x;
-			min_x = tmp.x;
+				for (int i = 1; i < vertices_floor.size(); ++i) {
+					tmp = modelmat_f * glm::vec4(vertices_floor[i], 1);
+					max_x = (max_x < tmp.x) ? tmp.x : max_x;
+					max_z = (max_z < tmp.z) ? tmp.z : max_z;
+					min_x = (min_x > tmp.x) ? tmp.x : min_x;
+					min_z = (min_z > tmp.z) ? tmp.z : min_z;
+				}
+				float center_x = (max_x + min_x) / 2;
+				float center_z = (max_z + min_z) / 2;
 
-			for (int i = 1; i < vertices_floor.size(); ++i) {
-				tmp = modelmat_f * glm::vec4(vertices_floor[i], 1);
-				max_x = (max_x < tmp.x) ? tmp.x : max_x;
-				min_x = (min_x > tmp.x) ? tmp.x : min_x;
+				float length_x = (max_x - min_x) / 2;
 			}
-			float center_x = (max_x + min_x) / 2;
-			float length_x = (max_x - min_x) / 2;
+
 
 			glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &modelmat_f[0][0]);
 			glDrawArrays(GL_TRIANGLES, 0, vertices_floor.size());

@@ -12,6 +12,9 @@ typedef struct BALL {
 	float x{0.0f};
 	float y{1.0f};
 
+	float r{ 0.8f };
+	float g{ 0.619f };
+	float b{ 1.0f };
 	float rAngle{0.0f};
 
 	bool isJump{ false };
