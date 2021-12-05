@@ -245,37 +245,78 @@ void gameScene::Mouse(int button, int state, int x, int y)
 }
 void gameScene::MouseMotion(int x, int y)
 {
-	mouse.move = (x - mouse.x) / 15;
+	mouse.move = (x - mouse.x) / 50;
 }
 
 void gameScene::Update(const float frametime)
 {
-	if (ball.rAngle >= 360.0f) {		//회전 각도 무한 증가 방지
-		ball.rAngle = 0.0f;
+	// 공이 떨어졌으면 update 중단
+	if (!ball.falling) {
+		//인덱스 조정
+		if ((int)speed > 10) {
+			index = (int)speed - 10;
+		}
+
+		if (ball.rAngle >= 360.0f) {		//회전 각도 무한 증가 방지
+			ball.rAngle = 0.0f;
+		}
+
+		ball.rAngle += frametime * 250;
+
+		// 발판 이동
+		speed += 10 * frametime;
 	}
 
-	ball.rAngle += frametime * 250;
 
-	speed += 0.15f;
-
-	//여기는 Ball Jump 코드
+	
+	// 여기는 Ball Jump 코드
 	if (ball.isJump) {			//점프 발판을 밟았다면
 		ball.y -= GRAVITY * frametime * 2;
 	}
 	else {						//점프 상태가 아니고 바닥과 닿아있지 않다면 중력 계속 작용
-		if (ball.y > 10.0f)
+		if (ball.y > 1.3f || ball.falling)
 			ball.y += GRAVITY * frametime * 2;
 	}
 
-	if (ball.y >= 21.0f) {		//점프 최고 높이 달성 시 떨어지게 만듦
+	if (ball.y >= 10.0f) {		//점프 최고 높이 달성 시 떨어지게 만듦
 		ball.isJump = false;
+	}
+
+	// 공과 각종 장애물 충돌
+	for (int i = 0; i < 5; ++i) {
+		float center_x = -6.0f + i * 3.0f;
+		float center_z = ((index + 10.0f) * -1.0f + speed) * 3;
+
+		// 점프 발판
+		if (map[index + 10][i] == 3) {
+			if (center_x - 1.5f <= ball.x + mouse.move && center_x + 1.5 >= ball.x + mouse.move) {
+				ball.isJump = true;
+			}
+		}
+
+		// 장애물
+		else if (map[index + 10][i] == 1) {
+			if (center_x - 1.5f <= ball.x + mouse.move && center_x + 1.5 >= ball.x + mouse.move
+				&& ball.y - 1.2f <= 2.0f) {
+				ball.r = 0.0f;
+				ball.g = 1.0f;
+				ball.b = 0.0f;
+			}
+		}
+
+		// 빈 공간
+		else if (map[index + 10][i] == 4) {
+			if (center_x - 1.5f <= ball.x + mouse.move && center_x + 1.5 >= ball.x + mouse.move) {
+				ball.falling = true;
+			}
+		}
 	}
 }
 
 void gameScene::Render()
 {
-	//glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	//glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	ourShader2.use();
@@ -307,18 +348,20 @@ void gameScene::Render()
 	//ball
 	glBindVertexArray(VAO);
 	modelmat = glm::mat4(1.0f);
-	modelmat = glm::scale(modelmat, glm::vec3(0.15f, 0.15f, 0.15f));
 	modelmat = glm::translate(modelmat, glm::vec3(ball.x + mouse.move, ball.y, 0.0f));
 	modelmat = glm::rotate(modelmat, glm::radians(ball.rAngle), glm::vec3(1.0f, 0.0f, 0.0f));
+	modelmat = glm::scale(modelmat, glm::vec3(0.15f, 0.15f, 0.15f));
 	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &modelmat[0][0]);
-	glUniform3f(fragColor, 0.8f, 0.619f, 1.0f);
+	glUniform3f(fragColor, ball.r, ball.g, ball.b);
 	glDrawArrays(GL_TRIANGLES, 0, vertices_sphere.size());
 
 	//floor
 
 	glBindVertexArray(VAO_f);
 
-	for (int i = 0; i < 3000; i++) {
+
+
+	for (int i = index; i < speed + 100; i++) {
 		floor_zPos = i * -1.0f + speed;
 		for (int j = 0; j < 5; j++) {
 			modelmat_f = glm::mat4(1.0f);
@@ -336,14 +379,12 @@ void gameScene::Render()
 				sizeOfWallx = 3.0f;
 				sizeOfWally = 2.0f;
 				sizeOfWallz = 3.0f;
-
 			}
 			else if (map[i][j] == 2) {//2 : 벽, 움직이고
 				glUniform3f(fragColor, 0.4f, 0.4f, 0.4f);
 				sizeOfWallx = 3.0f;
 				sizeOfWally = 5.0f;
 				sizeOfWallz = 3.0f;
-
 			}
 			else if (map[i][j] == 3) {//3 : 점프 발판
 
@@ -353,7 +394,6 @@ void gameScene::Render()
 				sizeOfWallz = 3.0f;
 			}
 			else if (map[i][j] == 4) {//4 : 빈 공간
-
 				glUniform3f(fragColor, 0.0f, 0.0f, 0.0f);
 				sizeOfWallx = 3.0f;
 				sizeOfWally = 0.00f;
@@ -365,7 +405,6 @@ void gameScene::Render()
 				sizeOfWally = 0.01f;
 				sizeOfWallz = 3.0f;
 			}
-
 
 			if (j == 0) {
 				floor_xPos = -2.0f;
@@ -382,6 +421,7 @@ void gameScene::Render()
 			else if (j == 4) {
 				floor_xPos = 2.0f;
 			}
+
 			//보류
 			//if (map[i][j] == 1) {//1 : 장애물(닿으면 죽음)
 			//	/*modelmat_ob1 = glm::mat4(1.0f);
@@ -396,6 +436,36 @@ void gameScene::Render()
 			//modelmat_f = glm::rotate(modelmat_f, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 			modelmat_f = glm::scale(modelmat_f, glm::vec3(sizeOfWallx, sizeOfWally, sizeOfWallz));
 			modelmat_f = glm::translate(modelmat_f, glm::vec3(floor_xPos, 0.0f, floor_zPos));
+
+			if (map[i][j] == 1) {
+				glm::vec4 tmp;
+				float max_z{};
+				float max_x{};
+				float max_y{};
+				float min_z{};
+				float min_y{};
+				float min_x{};
+
+				tmp = modelmat_f * glm::vec4(vertices_floor[0], 1);
+				max_x = tmp.x;
+				min_x = tmp.x;
+				min_z = tmp.z;
+				max_z = tmp.z;
+
+				for (int i = 1; i < vertices_floor.size(); ++i) {
+					tmp = modelmat_f * glm::vec4(vertices_floor[i], 1);
+					max_x = (max_x < tmp.x) ? tmp.x : max_x;
+					max_z = (max_z < tmp.z) ? tmp.z : max_z;
+					min_x = (min_x > tmp.x) ? tmp.x : min_x;
+					min_z = (min_z > tmp.z) ? tmp.z : min_z;
+				}
+				float center_x = (max_x + min_x) / 2;
+				float center_z = (max_z + min_z) / 2;
+
+				float length_x = (max_x - min_x) / 2;
+			}
+
+
 			glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &modelmat_f[0][0]);
 			glDrawArrays(GL_TRIANGLES, 0, vertices_floor.size());
 		}

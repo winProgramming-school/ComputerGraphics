@@ -19,10 +19,10 @@ void main(void)
    vec3 norm = normalize(Normal);
    vec3 lightDir = normalize(lightPos - FragPos);
    float diffuseLight = max(dot(Normal, lightDir), 0.0);
-   float d = 0.1f;
+   float d = 0.05f;
    vec3 diffuse = d * diffuseLight * lightColor;
 
-   int shininess = 32;
+   int shininess = 20;
    vec3 viewDir = normalize(viewPos - FragPos);
    vec3 reflectDir = reflect(-lightDir, norm);
 

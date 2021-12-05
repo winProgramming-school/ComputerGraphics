@@ -10,11 +10,15 @@ enum OBSTACLE{NORMAL, NONE, CONE};
 typedef struct BALL {
 	glm::mat4 modelmat{ glm::mat4(1.0f) };
 	float x{0.0f};
-	float y{10.0f};
+	float y{1.0f};
 
+	float r{ 0.8f };
+	float g{ 0.619f };
+	float b{ 1.0f };
 	float rAngle{0.0f};
 
 	bool isJump{ false };
+	bool falling{ false };
 }BALL;
 
 typedef struct MOUSE {
@@ -64,6 +68,7 @@ public:
 	MOUSE mouse;
 
 	float floor_FirstZ{};							//화면에 보이는 바닥 타일 중 제일 작은 z좌표값
+	int index{};									//바닥 시작 인덱스
 
 	int** map;
 
