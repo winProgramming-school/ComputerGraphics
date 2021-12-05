@@ -224,9 +224,6 @@ void gameScene::processKey(unsigned char key, int x, int y)
 	case 'q':
 		glutLeaveMainLoop();
 		break;
-	case 'j':
-		ball.isJump = true;
-		break;
 	}
 }
 
@@ -258,9 +255,14 @@ void gameScene::Update(const float frametime)
 
 	ball.rAngle += frametime * 250;
 
-	speed += 0.15f;
+	// 발판 이동
+	speed += 10*frametime;
 
-	//여기는 Ball Jump 코드
+	// 공과 각종 장애물 충돌
+	
+
+
+	// 여기는 Ball Jump 코드
 	if (ball.isJump) {			//점프 발판을 밟았다면
 		ball.y -= GRAVITY * frametime * 2;
 	}
@@ -276,8 +278,8 @@ void gameScene::Update(const float frametime)
 
 void gameScene::Render()
 {
-	//glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	//glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glEnable(GL_DEPTH_TEST);
@@ -310,7 +312,11 @@ void gameScene::Render()
 
 	glBindVertexArray(VAO_f);
 
-	for (int i = 0; i < 3000; i++) {
+	if ((int)speed > 10) {
+		index = (int)speed - 10;
+	}
+
+	for (int i = index; i < speed + 100; i++) {
 		floor_zPos = i * -1.0f + speed;
 		for (int j = 0; j < 5; j++) {
 			modelmat_f = glm::mat4(1.0f);
@@ -328,14 +334,12 @@ void gameScene::Render()
 				sizeOfWallx = 3.0f;
 				sizeOfWally = 2.0f;
 				sizeOfWallz = 3.0f;
-
 			}
 			else if (map[i][j] == 2) {//2 : 벽, 움직이고
 				glUniform3f(fragColor, 0.4f, 0.4f, 0.4f);
 				sizeOfWallx = 3.0f;
 				sizeOfWally = 5.0f;
 				sizeOfWallz = 3.0f;
-
 			}
 			else if (map[i][j] == 3) {//3 : 점프 발판
 
@@ -345,7 +349,6 @@ void gameScene::Render()
 				sizeOfWallz = 3.0f;
 			}
 			else if (map[i][j] == 4) {//4 : 빈 공간
-
 				glUniform3f(fragColor, 0.0f, 0.0f, 0.0f);
 				sizeOfWallx = 3.0f;
 				sizeOfWally = 0.00f;
@@ -357,7 +360,6 @@ void gameScene::Render()
 				sizeOfWally = 0.01f;
 				sizeOfWallz = 3.0f;
 			}
-
 
 			if (j == 0) {
 				floor_xPos = -2.0f;
@@ -374,6 +376,7 @@ void gameScene::Render()
 			else if (j == 4) {
 				floor_xPos = 2.0f;
 			}
+
 			//보류
 			//if (map[i][j] == 1) {//1 : 장애물(닿으면 죽음)
 			//	/*modelmat_ob1 = glm::mat4(1.0f);
