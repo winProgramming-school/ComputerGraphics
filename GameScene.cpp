@@ -224,6 +224,9 @@ void gameScene::processKey(unsigned char key, int x, int y)
 	case 'q':
 		glutLeaveMainLoop();
 		break;
+	case 'j':
+		ball.isJump = true;
+		break;
 	}
 }
 
@@ -244,11 +247,16 @@ void gameScene::Mouse(int button, int state, int x, int y)
 }
 void gameScene::MouseMotion(int x, int y)
 {
-	mouse.move = (x - mouse.x) / 15;
+	mouse.move = (x - mouse.x) / 50;
 }
 
 void gameScene::Update(const float frametime)
 {
+	//인덱스 조정
+	if ((int)speed > 10) {
+		index = (int)speed - 10;
+	}
+
 	if (ball.rAngle >= 360.0f) {		//회전 각도 무한 증가 방지
 		ball.rAngle = 0.0f;
 	}
@@ -257,22 +265,31 @@ void gameScene::Update(const float frametime)
 
 	// 발판 이동
 	speed += 10*frametime;
-
-	// 공과 각종 장애물 충돌
 	
 
-
+	
 	// 여기는 Ball Jump 코드
 	if (ball.isJump) {			//점프 발판을 밟았다면
 		ball.y -= GRAVITY * frametime * 2;
 	}
 	else {						//점프 상태가 아니고 바닥과 닿아있지 않다면 중력 계속 작용
-		if (ball.y > 10.0f)
+		if (ball.y > 1.3f)
 			ball.y += GRAVITY * frametime * 2;
 	}
 
-	if (ball.y >= 21.0f) {		//점프 최고 높이 달성 시 떨어지게 만듦
+	if (ball.y >= 10.0f) {		//점프 최고 높이 달성 시 떨어지게 만듦
 		ball.isJump = false;
+	}
+
+	// 공과 각종 장애물 충돌
+	for (int i = 0; i < 5; ++i) {
+		float center = -6.0f + i * 3.0f;
+
+		if (map[index + 10][i] == 3) {
+			if (center - 1.5f <= ball.x && center + 1.5 >= ball.x) {
+				ball.isJump = true;
+			}
+		}
 	}
 }
 
@@ -301,9 +318,9 @@ void gameScene::Render()
 	//ball
 	glBindVertexArray(VAO);
 	modelmat = glm::mat4(1.0f);
-	modelmat = glm::scale(modelmat, glm::vec3(0.15f, 0.15f, 0.15f));
 	modelmat = glm::translate(modelmat, glm::vec3(ball.x + mouse.move, ball.y, 0.0f));
 	modelmat = glm::rotate(modelmat, glm::radians(ball.rAngle), glm::vec3(1.0f, 0.0f, 0.0f));
+	modelmat = glm::scale(modelmat, glm::vec3(0.15f, 0.15f, 0.15f));
 	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &modelmat[0][0]);
 	glUniform3f(fragColor, 0.8f, 0.619f, 1.0f);
 	glDrawArrays(GL_TRIANGLES, 0, vertices_sphere.size());
@@ -312,9 +329,7 @@ void gameScene::Render()
 
 	glBindVertexArray(VAO_f);
 
-	if ((int)speed > 10) {
-		index = (int)speed - 10;
-	}
+
 
 	for (int i = index; i < speed + 100; i++) {
 		floor_zPos = i * -1.0f + speed;
@@ -391,6 +406,28 @@ void gameScene::Render()
 			//modelmat_f = glm::rotate(modelmat_f, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 			modelmat_f = glm::scale(modelmat_f, glm::vec3(sizeOfWallx, sizeOfWally, sizeOfWallz));
 			modelmat_f = glm::translate(modelmat_f, glm::vec3(floor_xPos, 0.0f, floor_zPos));
+
+
+			glm::vec4 tmp;
+			float max_z{};
+			float max_x{};
+			float max_y{};
+			float min_z{};
+			float min_y{};
+			float min_x{};
+
+			tmp = modelmat_f * glm::vec4(vertices_floor[0], 1);
+			max_x = tmp.x;
+			min_x = tmp.x;
+
+			for (int i = 1; i < vertices_floor.size(); ++i) {
+				tmp = modelmat_f * glm::vec4(vertices_floor[i], 1);
+				max_x = (max_x < tmp.x) ? tmp.x : max_x;
+				min_x = (min_x > tmp.x) ? tmp.x : min_x;
+			}
+			float center_x = (max_x + min_x) / 2;
+			float length_x = (max_x - min_x) / 2;
+
 			glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &modelmat_f[0][0]);
 			glDrawArrays(GL_TRIANGLES, 0, vertices_floor.size());
 		}

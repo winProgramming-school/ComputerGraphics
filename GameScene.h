@@ -10,7 +10,7 @@ enum OBSTACLE{NORMAL, NONE, CONE};
 typedef struct BALL {
 	glm::mat4 modelmat{ glm::mat4(1.0f) };
 	float x{0.0f};
-	float y{10.0f};
+	float y{1.0f};
 
 	float rAngle{0.0f};
 
