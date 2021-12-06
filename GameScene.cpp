@@ -419,11 +419,11 @@ void gameScene::Update(const float frametime)
 
         // Àå¾Ö¹°
         else if (map[index + 10][i] == 1) {
-            if (center_x - 1.5f <= ball.x + mouse.move && center_x + 1.5 >= ball.x + mouse.move
-                && ball.y - 1.2f <= 2.0f) {
-                ball.r = 0.0f;
-                ball.g = 1.0f;
-                ball.b = 0.0f;
+            float distance = (center_x - (ball.x + mouse.move)) * (center_x - (ball.x + mouse.move));
+            if (sqrt(distance) < 1.5f + 1.0f && (ball.y - 1.2f) <= 2.0f) {
+				ball.r = 0.0f;
+				ball.g = 1.0f;
+				ball.b = 0.0f;
             }
         }
 
