@@ -243,19 +243,8 @@ void gameScene::init()
 }
 void gameScene::drawModel() {
 
-
-	/*if (clearStage == false && overStage == false) {
-
-		ourShader2.use();
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, GL_TEXTURE0);
-		int tLocation = glGetUniformLocation(ourShader2.ID, "texture1");
-		glUniform1i(tLocation, 0);
-		glBindVertexArray(VAO_back);
-		glDrawArrays(GL_TRIANGLES, 0, vertices_back.size());
-	}*/
-
 	ourShader.use();
+
 	//ball
 	glBindVertexArray(VAO);
 	modelmat = glm::mat4(1.0f);
@@ -267,7 +256,6 @@ void gameScene::drawModel() {
 	glDrawArrays(GL_TRIANGLES, 0, vertices_sphere.size());
 
 	//floor
-
 	glBindVertexArray(VAO_f);
 
 	for (int i = index; i < index + 100; i++) {
@@ -424,12 +412,12 @@ void gameScene::MouseMotion(int x, int y)
 {
 	mouse.move = (x - mouse.x) / 50;
 }
-
 void gameScene::Update(const float frametime)
 {
 	// 공이 떨어졌으면 update 중단
 	if (pause) {
 		return;
+	}
 
 	// 공이 떨어졌으면 update 중단
 	if (!ball.falling) {
@@ -563,14 +551,21 @@ void gameScene::Render()
 	glViewport(0, 0, WINDOW_LENGTH, WINDOW_HEIGHT);
 	drawModel();
 
-	////미니맵
-	//CP.cameraPos = glm::vec3(CP.x, CP.y + 12.0f, CP.z - 4.0f);
-	//CD.cameraDirection = glm::vec3(CD.x, CD.y, CD.z);
-	//CP.cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-	//view = glm::lookAt(CP.cameraPos, CD.cameraDirection, CP.cameraUp);
-	//glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
-	//glViewport(WINDOW_LENGTH - 100, WINDOW_HEIGHT - 100, WINDOW_LENGTH / 8, WINDOW_HEIGHT / 8);
-	//drawModel();
+	//미니맵
+	CP.cameraPos = glm::vec3(CP.x, CP.y + 12.0f, CP.z - 4.0f);
+	CD.cameraDirection = glm::vec3(CD.x, CD.y, CD.z);
+	CP.cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+	view = glm::lookAt(CP.cameraPos, CD.cameraDirection, CP.cameraUp);
+	glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
+	glViewport(WINDOW_LENGTH - 100, WINDOW_HEIGHT - 100, WINDOW_LENGTH / 8, WINDOW_HEIGHT / 8);
+	drawModel();
+
+	CP.cameraPos = glm::vec3(CP.x, CP.y, CP.z);
+	CD.cameraDirection = glm::vec3(CD.x, CD.y, CD.z);
+	CP.cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+	view = glm::lookAt(CP.cameraPos, CD.cameraDirection, CP.cameraUp);
+	glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
+	glViewport(0, 0, WINDOW_LENGTH, WINDOW_HEIGHT);
 
 	if (clearStage) {
 		scene* scene = GameManager.curScene;   ////현재 씬을 tmp에 넣고 지워줌
