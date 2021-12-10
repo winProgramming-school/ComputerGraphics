@@ -113,6 +113,7 @@ public:
 	void InitMap();
 	void InitTexture();
 	void drawModel();
+	void InitSound();
 
 	virtual void init() override;
 

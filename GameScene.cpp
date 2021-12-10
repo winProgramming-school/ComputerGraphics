@@ -2,6 +2,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include <fstream>
+#include <windows.h>
 extern GameFramework GameManager;
 
 gameScene::~gameScene()
@@ -257,7 +258,6 @@ void gameScene::drawModel() {
 
 	//floor
 	glBindVertexArray(VAO_f);
-
 	for (int i = index; i < index + 100; i++) {
 		floor_zPos = i * -1.0f + speed;
 		for (int j = 0; j < 5; j++) {
