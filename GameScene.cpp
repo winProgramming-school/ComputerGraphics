@@ -71,22 +71,44 @@ void gameScene::InitMap() {
     fin.close(); // 파일 닫기
 }
 void gameScene::InitTexture() {
-    ourShader2.use();
-    glActiveTexture(GL_TEXTURE0);
-    int width;
-    int height;
-    int numberOfChannel;
-    //glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, GL_TEXTURE0);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    unsigned char* data1 = stbi_load("1.bmp", &width, &height, &numberOfChannel, 0);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data1);
-    glGenerateMipmap(GL_TEXTURE_2D);
-    stbi_image_free(data1);
-    glUseProgram(0);
+	ourShader2.use();
+	glActiveTexture(GL_TEXTURE0);
+	int width;
+	int height;
+	int numberOfChannel;
+	//glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, GL_TEXTURE0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	unsigned char* data1 = stbi_load("1.bmp", &width, &height, &numberOfChannel, 0);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data1);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	stbi_image_free(data1);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, GL_TEXTURE1);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	unsigned char* data2 = stbi_load("clear.bmp", &width, &height, &numberOfChannel, 0);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data2);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	stbi_image_free(data2);
+
+	
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, GL_TEXTURE2);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	unsigned char* data3 = stbi_load("over.bmp", &width, &height, &numberOfChannel, 0);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data3);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	stbi_image_free(data3);
 
 }
 void gameScene::init()
@@ -197,11 +219,11 @@ void gameScene::init()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
     glEnableVertexAttribArray(0);
 
-    //wall uv버퍼
-    glBindBuffer(GL_ARRAY_BUFFER, VBO_back_position[1]);
-    glBufferData(GL_ARRAY_BUFFER, uvs_back.size() * sizeof(glm::vec2), &uvs_back[0], GL_STATIC_DRAW);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
-    glEnableVertexAttribArray(1);
+	//wall uv버퍼
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_back_position[1]);
+	glBufferData(GL_ARRAY_BUFFER, uvs_back.size() * sizeof(glm::vec2), &uvs_back[0], GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
+	glEnableVertexAttribArray(1);
 
     //viewLocation2 = glGetUniformLocation(ourShader2.ID, "viewTransform");
     //projectionLocation2 = glGetUniformLocation(ourShader2.ID, "projectionTransform");
@@ -338,7 +360,16 @@ void gameScene::processKey(unsigned char key, int x, int y)
     case 'q':
         glutLeaveMainLoop();
         break;
-    }
+  
+	case 'c':
+		overStage = false;
+		clearStage = true;
+		break;
+	case 'o':
+		clearStage = false;
+		overStage = true;
+		break;
+	}
 }
 
 void gameScene::Mouse(int button, int state, int x, int y)
@@ -457,32 +488,148 @@ void gameScene::Render()
     //glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    ourShader2.use();
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, GL_TEXTURE0);
-    int tLocation = glGetUniformLocation(ourShader2.ID, "texture1");
-    glUniform1i(tLocation, 0);
-    glBindVertexArray(VAO_back);
-    glDrawArrays(GL_TRIANGLES, 0, vertices_back.size());
+	if (clearStage == false && overStage == false) {
+		ourShader2.use();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, GL_TEXTURE0);
+		int tLocation = glGetUniformLocation(ourShader2.ID, "texture1");
+		glUniform1i(tLocation, 0);
+		glBindVertexArray(VAO_back);
+		glDrawArrays(GL_TRIANGLES, 0, vertices_back.size());
+	}
+	glEnable(GL_DEPTH_TEST);
+	glFrontFace(GL_CCW);
+	glEnable(GL_CULL_FACE);
 
-    glEnable(GL_DEPTH_TEST);
-    glFrontFace(GL_CCW);
-    glEnable(GL_CULL_FACE);
+	ourShader.use();
+
+	//카메라 업데이트
+	CP.cameraPos = glm::vec3(CP.x, CP.y, CP.z);
+	CD.cameraDirection = glm::vec3(CD.x, CD.y, CD.z);
+	CP.cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+	view = glm::lookAt(CP.cameraPos, CD.cameraDirection, CP.cameraUp);
+	glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
 
 
-    ourShader.use();
+	//여기에 그리기
+
+
+	//ball
+	glBindVertexArray(VAO);
+	modelmat = glm::mat4(1.0f);
+	modelmat = glm::translate(modelmat, glm::vec3(ball.x + mouse.move, ball.y, 0.0f));
+	modelmat = glm::rotate(modelmat, glm::radians(ball.rAngle), glm::vec3(1.0f, 0.0f, 0.0f));
+	modelmat = glm::scale(modelmat, glm::vec3(0.15f, 0.15f, 0.15f));
+	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &modelmat[0][0]);
+	glUniform3f(fragColor, ball.r, ball.g, ball.b);
+	glDrawArrays(GL_TRIANGLES, 0, vertices_sphere.size());
+
+	//floor
+
+	glBindVertexArray(VAO_f);
 
 
 
-    
-    //메인화면
-    CP.cameraPos = glm::vec3(CP.x, CP.y, CP.z);
-    CD.cameraDirection = glm::vec3(CD.x, CD.y, CD.z);
-    CP.cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-    view = glm::lookAt(CP.cameraPos, CD.cameraDirection, CP.cameraUp);
-    glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
-    glViewport(0, 0, WINDOW_LENGTH, WINDOW_HEIGHT);
-    drawModel();
+	for (int i = index; i < speed + 100; i++) {
+		floor_zPos = i * -1.0f + speed;
+		for (int j = 0; j < 5; j++) {
+			modelmat_f = glm::mat4(1.0f);
+
+			//맵과 연결
+			if (map[i][j] == 0) {//0 : base (기본 땅)
+
+				glUniform3f(fragColor, 0.8f, 1.0f, 1.0f);//연하늘
+				sizeOfWallx = 3.0f;
+				sizeOfWally = 0.01f;
+				sizeOfWallz = 3.0f;
+			}
+			else if (map[i][j] == 1) {//1 : 장애물(닿으면 죽음)
+				glUniform3f(fragColor, 0.8f, 0.0f, 0.0f);
+				sizeOfWallx = 3.0f;
+				sizeOfWally = 2.0f;
+				sizeOfWallz = 3.0f;
+			}
+			else if (map[i][j] == 2) {//2 : 벽, 움직이고
+				glUniform3f(fragColor, 0.4f, 0.4f, 0.4f);
+				sizeOfWallx = 3.0f;
+				sizeOfWally = 5.0f;
+				sizeOfWallz = 3.0f;
+			}
+			else if (map[i][j] == 3) {//3 : 점프 발판
+
+				glUniform3f(fragColor, 0.0f, 0.0f, 1.0f);//블루
+				sizeOfWallx = 3.0f;
+				sizeOfWally = 0.01f;
+				sizeOfWallz = 3.0f;
+			}
+			else if (map[i][j] == 4) {//4 : 빈 공간
+				glUniform3f(fragColor, 0.0f, 0.0f, 0.0f);
+				sizeOfWallx = 3.0f;
+				sizeOfWally = 0.00f;
+				sizeOfWallz = 3.0f;
+			}
+			else {
+				glUniform3f(fragColor, 1.0f, 1.0f, 1.0f);
+				sizeOfWallx = 3.0f;
+				sizeOfWally = 0.01f;
+				sizeOfWallz = 3.0f;
+			}
+
+			if (j == 0) {
+				floor_xPos = -2.0f;
+			}
+			else if (j == 1) {
+				floor_xPos = -1.0f;
+			}
+			else if (j == 2) {
+				floor_xPos = 0.0f;
+			}
+			else if (j == 3) {
+				floor_xPos = 1.0f;
+			}
+			else if (j == 4) {
+				floor_xPos = 2.0f;
+			}
+
+			//보류
+			//if (map[i][j] == 1) {//1 : 장애물(닿으면 죽음)
+			//	/*modelmat_ob1 = glm::mat4(1.0f);
+			//	glBindVertexArray(VAO_ob1);
+			//	glUniform3f(fragColor, 1.0f, 1.0f, 0.0f);
+			//	modelmat_ob1 = glm::scale(modelmat_ob1, glm::vec3(floor_xPos, 1.0f, floor_zPos));
+			//	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &modelmat_ob1[0][0]);
+			//	glDrawArrays(GL_TRIANGLES, 0, vertices_ob1.size());*/
+			//}
+			//else {
+			//}
+			//modelmat_f = glm::rotate(modelmat_f, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+			modelmat_f = glm::scale(modelmat_f, glm::vec3(sizeOfWallx, sizeOfWally, sizeOfWallz));
+			modelmat_f = glm::translate(modelmat_f, glm::vec3(floor_xPos, 0.0f, floor_zPos));
+
+			if (map[i][j] == 1) {
+				glm::vec4 tmp;
+				float max_z{};
+				float max_x{};
+				float max_y{};
+				float min_z{};
+				float min_y{};
+				float min_x{};
+
+				tmp = modelmat_f * glm::vec4(vertices_floor[0], 1);
+				max_x = tmp.x;
+				min_x = tmp.x;
+				min_z = tmp.z;
+				max_z = tmp.z;
+
+				for (int i = 1; i < vertices_floor.size(); ++i) {
+					tmp = modelmat_f * glm::vec4(vertices_floor[i], 1);
+					max_x = (max_x < tmp.x) ? tmp.x : max_x;
+					max_z = (max_z < tmp.z) ? tmp.z : max_z;
+					min_x = (min_x > tmp.x) ? tmp.x : min_x;
+					min_z = (min_z > tmp.z) ? tmp.z : min_z;
+				}
+				float center_x = (max_x + min_x) / 2;
+				float center_z = (max_z + min_z) / 2;
 
 
     //미니맵
@@ -494,6 +641,29 @@ void gameScene::Render()
     glViewport(WINDOW_LENGTH - 100, WINDOW_HEIGHT - 100, WINDOW_LENGTH / 8, WINDOW_HEIGHT / 8);
     drawModel();
 
+			glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &modelmat_f[0][0]);
+			glDrawArrays(GL_TRIANGLES, 0, vertices_floor.size());
+		}
+	}
+
+	if (clearStage) {
+		ourShader2.use();
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, GL_TEXTURE1);
+		int tLocation = glGetUniformLocation(ourShader2.ID, "texture1");
+		glUniform1i(tLocation, 0);
+		glBindVertexArray(VAO_back);
+		glDrawArrays(GL_TRIANGLES, 0, vertices_back.size());
+	}
+	else if (overStage) {
+		ourShader2.use();
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, GL_TEXTURE2);
+		int tLocation = glGetUniformLocation(ourShader2.ID, "texture1");
+		glUniform1i(tLocation, 0);
+		glBindVertexArray(VAO_back);
+		glDrawArrays(GL_TRIANGLES, 0, vertices_back.size());
+	}
 
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);

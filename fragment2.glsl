@@ -13,4 +13,5 @@ void main(void)
 	vec3 result;
 	result = vec3(texture(texture1, TexCoord).x, texture(texture1, TexCoord).y, texture(texture1, TexCoord).z);
 	FragColor = vec4(result, 0.5f);
+	//FragColor = (texture (texture1, TexCoord) + texture (texture2, TexCoord) ) / 2.0; 
 }

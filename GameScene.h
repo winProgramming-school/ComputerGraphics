@@ -78,6 +78,9 @@ public:
 	float sizeOfWallx = 3.0f;
 	float sizeOfWally = 0.01f;
 	float sizeOfWallz = 3.0f;
+
+	bool clearStage = false;
+	bool overStage = false;
 	
 	float obstacle_speed[5]{3.0f, 4.0f, 3.5f, 5.0f, 5.5f};		//각각 장애물 속도
 	float obstacle_y[5]{1.0f, 1.0f, 1.0f, 1.0f, 1.0f };			//각각 장애물 높이
