@@ -21,12 +21,12 @@ menuScene::~menuScene()
    normals_back.shrink_to_fit();
 
    glDeleteShader(ourShader.ID);
+   glDeleteShader(ourShader2.ID);
 }
 
 void menuScene::InitTexture() {
    ourShader2.use();
    glActiveTexture(GL_TEXTURE0);
-   //이러지마...
    int width;
    int height;
    int numberOfChannel;

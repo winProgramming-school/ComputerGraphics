@@ -21,7 +21,9 @@
 #include "Shader.h"
 #include "Objloader.h"
 #include "GameFramework.h"
-#include "GameScene.h"
 #include "MenuScene.h"
+#include "GameScene.h"
+#include "clearScene.h"
+#include "overScene.h"
 
 

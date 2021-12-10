@@ -141,19 +141,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="clearScene.cpp" />
     <ClCompile Include="GameFramework.cpp" />
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="menuScene.cpp" />
     <ClCompile Include="Objloader.cpp" />
+    <ClCompile Include="overScene.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="clearScene.h" />
     <ClInclude Include="GameFramework.h" />
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="MenuScene.h" />
     <ClInclude Include="Objloader.h" />
+    <ClInclude Include="overScene.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="stb_image.h" />
