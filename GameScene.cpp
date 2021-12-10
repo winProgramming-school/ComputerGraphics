@@ -258,7 +258,13 @@ void gameScene::drawModel() {
 
 	//floor
 	glBindVertexArray(VAO_f);
-	for (int i = index; i < index + 100; i++) {
+	
+	int end = index + 100;
+	if (index >= 920) {
+		end = 1050;
+	}
+
+	for (int i = index; i < end; i++) {
 		floor_zPos = i * -1.0f + speed;
 		for (int j = 0; j < 5; j++) {
 			modelmat_f = glm::mat4(1.0f);
@@ -408,10 +414,12 @@ void gameScene::Mouse(int button, int state, int x, int y)
 		mouse.move = 0.0f;
 	}
 }
+
 void gameScene::MouseMotion(int x, int y)
 {
 	mouse.move = (x - mouse.x) / 50;
 }
+
 void gameScene::Update(const float frametime)
 {
 	// 공이 떨어졌으면 update 중단
@@ -419,16 +427,13 @@ void gameScene::Update(const float frametime)
 		return;
 	}
 
-	// 공이 떨어졌으면 update 중단
 	if (!ball.falling) {
 		//인덱스 조정
-		if ((int)speed > 10 && index < 920) {
+		if ((int)speed > 10) {
 			index = (int)speed - 10;
 		}
 		if (speed >= 1030) {
-			ball.Init();
-			speed = 0;
-			index = 0;
+			clearStage = true;
 		}
 		if (ball.rAngle >= 360.0f) {      //회전 각도 무한 증가 방지
 			ball.rAngle = 0.0f;
@@ -574,6 +579,7 @@ void gameScene::Render()
 		GameManager.nowscene = CLEAR; //다시시작
 		delete scene;
 	}
+
 	else if (overStage) {
 		scene* scene = GameManager.curScene;   ////현재 씬을 tmp에 넣고 지워줌
 		GameManager.curScene = new overScene;
