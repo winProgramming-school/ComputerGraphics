@@ -83,6 +83,9 @@ public:
 	float obstacle_y[5]{ 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };			//각각 장애물 높이
 	bool obstacle_up[5]{ true, true, false, false, true };		//각각 장애물 up or down
 
+	bool clearStage = false;
+	bool overStage = false;
+
 	////텍스처 쉐이더 uniform 변수 위치
 	//unsigned int viewLocation2, projectionLocation2, modelLocation2;
 	//unsigned int texture;
