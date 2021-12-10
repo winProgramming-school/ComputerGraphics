@@ -57,7 +57,7 @@ void gameScene::SoundSystem() {
 	fSystem->createSound("jump.wav", FMOD_LOOP_OFF | FMOD_DEFAULT, NULL, &effectSound[0]);
 	fSystem->createSound("fall.wav", FMOD_LOOP_OFF | FMOD_DEFAULT, NULL, &effectSound[1]);
 	fSystem->createSound("crush.wav", FMOD_LOOP_OFF | FMOD_DEFAULT, NULL, &effectSound[2]);
-	fSystem->createSound("menu.wav", FMOD_LOOP_OFF | FMOD_DEFAULT, NULL, &effectSound[3]);
+	fSystem->createSound("over.wav", FMOD_LOOP_OFF | FMOD_DEFAULT, NULL, &effectSound[3]);
 	fSystem->createSound("clear.wav", FMOD_LOOP_OFF | FMOD_DEFAULT, NULL, &effectSound[4]);
 
 }
@@ -116,7 +116,6 @@ void gameScene::InitTexture() {
 	int width;
 	int height;
 	int numberOfChannel;
-	//glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, GL_TEXTURE0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -126,29 +125,6 @@ void gameScene::InitTexture() {
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data1);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	stbi_image_free(data1);
-
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, GL_TEXTURE1);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	unsigned char* data2 = stbi_load("clear.bmp", &width, &height, &numberOfChannel, 0);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data2);
-	glGenerateMipmap(GL_TEXTURE_2D);
-	stbi_image_free(data2);
-
-
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, GL_TEXTURE2);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	unsigned char* data3 = stbi_load("over.bmp", &width, &height, &numberOfChannel, 0);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data3);
-	glGenerateMipmap(GL_TEXTURE_2D);
-	stbi_image_free(data3);
 
 }
 void gameScene::init()
