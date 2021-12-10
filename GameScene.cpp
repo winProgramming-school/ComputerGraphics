@@ -1,9 +1,18 @@
+#pragma once
+
 #include "stdafx.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include <fstream>
-#include <windows.h>
+#include"fmod.hpp"
+#include"fmod_errors.h"
 extern GameFramework GameManager;
+using namespace FMOD;
+
+System* fSystem;
+Sound* bgSound;
+Sound* effectSound[5];
+Channel* fChannel[3];
 
 gameScene::~gameScene()
 {
@@ -32,9 +41,31 @@ gameScene::~gameScene()
 	glDeleteShader(ourShader.ID);
 	glDeleteShader(ourShader2.ID);
 
+
+	fSystem->release();
 	for (int i = 0; i < 10; i++)
 		delete[] map[i];
 	delete[] map;
+}
+
+void gameScene::SoundSystem() {
+	FMOD::System_Create(&fSystem);
+
+	fSystem->init(4, FMOD_INIT_NORMAL, NULL);
+
+	fSystem->createSound("stageBGM.wav", FMOD_LOOP_NORMAL | FMOD_DEFAULT, NULL, &bgSound);
+	fSystem->createSound("jump.wav", FMOD_LOOP_OFF | FMOD_DEFAULT, NULL, &effectSound[0]);
+	fSystem->createSound("fall.wav", FMOD_LOOP_OFF | FMOD_DEFAULT, NULL, &effectSound[1]);
+	fSystem->createSound("crush.wav", FMOD_LOOP_OFF | FMOD_DEFAULT, NULL, &effectSound[2]);
+	fSystem->createSound("menu.wav", FMOD_LOOP_OFF | FMOD_DEFAULT, NULL, &effectSound[3]);
+	fSystem->createSound("clear.wav", FMOD_LOOP_OFF | FMOD_DEFAULT, NULL, &effectSound[4]);
+
+}
+
+void gameScene::Play(int Sound_num, int cannel) {
+
+	fSystem->playSound(effectSound[Sound_num], NULL, 0, &fChannel[cannel]);
+	//fSystem->playSound(bgSound[Sound_num], NULL, 0, Channel);
 }
 void gameScene::InitMap() {
 	std::ifstream fin{ "map2.txt" };
@@ -115,6 +146,11 @@ void gameScene::InitTexture() {
 }
 void gameScene::init()
 {
+
+	SoundSystem();
+	fSystem->playSound(bgSound, NULL, 0, &fChannel[0]);
+	fChannel[1]->setPaused(true);
+	fChannel[2]->setPaused(true);
 	ourShader.InitShader("vertex.glsl", "fragment.glsl");      // 쉐이더 생성
 
 	//여기에 obj로드코드
@@ -258,7 +294,7 @@ void gameScene::drawModel() {
 
 	//floor
 	glBindVertexArray(VAO_f);
-	
+
 	int end = index + 100;
 	if (index >= 920) {
 		end = 1050;
@@ -366,14 +402,14 @@ void gameScene::processKey(unsigned char key, int x, int y)
 	case 'q':
 		glutLeaveMainLoop();
 		break;
-	//case 'c':
-	//	overStage = false;
-	//	clearStage = true;
-	//	break;
-	//case 'o':
-	//	clearStage = false;
-	//	overStage = true;
-	//	break;
+	case 'c':
+		overStage = false;
+		clearStage = true;
+		break;
+		//case 'o':
+		//	clearStage = false;
+		//	overStage = true;
+		//	break;
 	case 'r':
 		ball.Init();
 		speed = 0;
@@ -396,6 +432,7 @@ void gameScene::processKey(unsigned char key, int x, int y)
 			testmode = true;
 		}
 		break;
+
 	}
 }
 
@@ -434,6 +471,7 @@ void gameScene::Update(const float frametime)
 		}
 		if (speed >= 1030) {
 			clearStage = true;
+			fChannel[0]->setPaused(true);
 		}
 		if (ball.rAngle >= 360.0f) {      //회전 각도 무한 증가 방지
 			ball.rAngle = 0.0f;
@@ -447,6 +485,7 @@ void gameScene::Update(const float frametime)
 
 	// 여기는 Ball Jump 코드
 	if (ball.isJump) {         //점프 발판을 밟았다면
+		Play(0, 1);
 		ball.y -= GRAVITY * frametime * 2;
 	}
 	else {                  //점프 상태가 아니고 바닥과 닿아있지 않다면 중력 계속 작용
@@ -486,6 +525,8 @@ void gameScene::Update(const float frametime)
 
 	if (lifePoint == 0)			//생명이 다 줄어들면
 	{
+		Play(1, 1);
+		fChannel[0]->setPaused(true);
 		overStage = true;
 	}
 
@@ -505,10 +546,12 @@ void gameScene::Update(const float frametime)
 		else if (map[index + 10][i] == 1) {
 			float distance = (center_x - (ball.x + mouse.move)) * (center_x - (ball.x + mouse.move));
 			if (sqrt(distance) < 1.5f + 1.0f && (ball.y - 1.0f) <= 2.0f) {
+				Play(2, 1);
 				ball.r = 0.0f;
 				ball.g = 1.0f;
 				ball.b = 0.0f;
 				lifePoint -= 1;
+
 			}
 		}
 
@@ -523,6 +566,7 @@ void gameScene::Update(const float frametime)
 		else if (map[index + 10][i] == 2) {
 			float distance = (center_x - (ball.x + mouse.move)) * (center_x - (ball.x + mouse.move));
 			if (sqrt(distance) < 1.5f + 1.0f && (ball.y - 1.0f) <= obstacle_y[i]) {
+				Play(2, 1);
 				ball.r = 0.0f;
 				ball.g = 1.0f;
 				ball.b = 1.0f;
@@ -573,6 +617,8 @@ void gameScene::Render()
 	glViewport(0, 0, WINDOW_LENGTH, WINDOW_HEIGHT);
 
 	if (clearStage) {
+		fChannel[0]->setPaused(true);
+		Play(4, 2);
 		scene* scene = GameManager.curScene;   ////현재 씬을 tmp에 넣고 지워줌
 		GameManager.curScene = new clearScene;
 		GameManager.curScene->init();
@@ -581,6 +627,9 @@ void gameScene::Render()
 	}
 
 	else if (overStage) {
+		fChannel[0]->setPaused(true);
+		if (ball.falling) {}
+		else Play(3, 2);
 		scene* scene = GameManager.curScene;   ////현재 씬을 tmp에 넣고 지워줌
 		GameManager.curScene = new overScene;
 		GameManager.curScene->init();

@@ -1,5 +1,6 @@
 #pragma once
 #include "scene.h"
+#include <windows.h>
 
 #define GRAVITY -15.0f
 
@@ -86,6 +87,8 @@ public:
 
 	int** map;
 
+	
+
 	float floor_xPos = -2.0f;
 	float floor_zPos = 0.0f;
 	float speed{};
@@ -113,7 +116,8 @@ public:
 	void InitMap();
 	void InitTexture();
 	void drawModel();
-	void InitSound();
+	void SoundSystem();
+	void Play(int Sound_num, int cannel);
 
 	virtual void init() override;
 

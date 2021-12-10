@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+#include <Windows.h>
 enum GAME_STATUS { RUN, PAUSE, GAMEOVER };
 
 struct CAMERAPOS {

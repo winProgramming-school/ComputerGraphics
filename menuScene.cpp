@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "MenuScene.h"
 #include "stb_image.h"
+
 extern GameFramework GameManager;
 
 menuScene::~menuScene()
