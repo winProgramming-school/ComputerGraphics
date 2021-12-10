@@ -269,6 +269,11 @@ void gameScene::drawModel() {
 	//floor
 
 	glBindVertexArray(VAO_f);
+	
+	int end = index + 100;
+	if (index >= 920) {
+		end = 1050;
+	}
 
 	for (int i = index; i < index + 100; i++) {
 		floor_zPos = i * -1.0f + speed;
@@ -430,8 +435,8 @@ void gameScene::Update(const float frametime)
 	// 공이 떨어졌으면 update 중단
 	if (pause) {
 		return;
+	}
 
-	// 공이 떨어졌으면 update 중단
 	if (!ball.falling) {
 		//인덱스 조정
 		if ((int)speed > 10 && index < 920) {
@@ -579,6 +584,7 @@ void gameScene::Render()
 		GameManager.nowscene = CLEAR; //다시시작
 		delete scene;
 	}
+
 	else if (overStage) {
 		scene* scene = GameManager.curScene;   ////현재 씬을 tmp에 넣고 지워줌
 		GameManager.curScene = new overScene;
