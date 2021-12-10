@@ -263,7 +263,7 @@ void gameScene::drawModel() {
 		end = 1050;
 	}
 
-	for (int i = index; i < index + 100; i++) {
+	for (int i = index; i < end; i++) {
 		floor_zPos = i * -1.0f + speed;
 		for (int j = 0; j < 5; j++) {
 			modelmat_f = glm::mat4(1.0f);
@@ -413,10 +413,12 @@ void gameScene::Mouse(int button, int state, int x, int y)
 		mouse.move = 0.0f;
 	}
 }
+
 void gameScene::MouseMotion(int x, int y)
 {
 	mouse.move = (x - mouse.x) / 50;
 }
+
 void gameScene::Update(const float frametime)
 {
 	// 공이 떨어졌으면 update 중단
@@ -426,13 +428,11 @@ void gameScene::Update(const float frametime)
 
 	if (!ball.falling) {
 		//인덱스 조정
-		if ((int)speed > 10 && index < 920) {
+		if ((int)speed > 10) {
 			index = (int)speed - 10;
 		}
 		if (speed >= 1030) {
-			ball.Init();
-			speed = 0;
-			index = 0;
+			clearStage = true;
 		}
 		if (ball.rAngle >= 360.0f) {      //회전 각도 무한 증가 방지
 			ball.rAngle = 0.0f;
