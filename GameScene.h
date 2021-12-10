@@ -78,6 +78,9 @@ public:
 	float sizeOfWallx = 3.0f;
 	float sizeOfWally = 0.01f;
 	float sizeOfWallz = 3.0f;
+
+	bool clearStage = false;
+	bool overStage = false;
 	
 	////텍스처 쉐이더 uniform 변수 위치
 	//unsigned int viewLocation2, projectionLocation2, modelLocation2;

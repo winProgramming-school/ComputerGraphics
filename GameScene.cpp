@@ -86,8 +86,30 @@ void gameScene::InitTexture() {
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data1);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	stbi_image_free(data1);
-	glUseProgram(0);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, GL_TEXTURE1);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	unsigned char* data2 = stbi_load("clear.bmp", &width, &height, &numberOfChannel, 0);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data2);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	stbi_image_free(data2);
+
 	
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, GL_TEXTURE2);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	unsigned char* data3 = stbi_load("over.bmp", &width, &height, &numberOfChannel, 0);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data3);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	stbi_image_free(data3);
+
 }
 void gameScene::init()
 {
@@ -200,7 +222,7 @@ void gameScene::init()
 	//wall uv버퍼
 	glBindBuffer(GL_ARRAY_BUFFER, VBO_back_position[1]);
 	glBufferData(GL_ARRAY_BUFFER, uvs_back.size() * sizeof(glm::vec2), &uvs_back[0], GL_STATIC_DRAW);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), 0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
 	glEnableVertexAttribArray(1);
 
 	//viewLocation2 = glGetUniformLocation(ourShader2.ID, "viewTransform");
@@ -224,6 +246,14 @@ void gameScene::processKey(unsigned char key, int x, int y)
 		break;
 	case 'j':
 		ball.isJump = true;
+		break;
+	case 'c':
+		overStage = false;
+		clearStage = true;
+		break;
+	case 'o':
+		clearStage = false;
+		overStage = true;
 		break;
 	}
 }
@@ -268,17 +298,17 @@ void gameScene::Update(const float frametime)
 	}
 
 
-	
+
 	// 여기는 Ball Jump 코드
 	if (ball.isJump) {			//점프 발판을 밟았다면
 		ball.y -= GRAVITY * frametime * 2;
 	}
 	else {						//점프 상태가 아니고 바닥과 닿아있지 않다면 중력 계속 작용
 		if (ball.y > 1.3f || ball.falling)
-			ball.y += GRAVITY * frametime * 2;
+			ball.y += GRAVITY * frametime;
 	}
 
-	if (ball.y >= 10.0f) {		//점프 최고 높이 달성 시 떨어지게 만듦
+	if (ball.y >= 5.0f) {		//점프 최고 높이 달성 시 떨어지게 만듦
 		ball.isJump = false;
 	}
 
@@ -319,18 +349,18 @@ void gameScene::Render()
 	//glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	ourShader2.use();
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, GL_TEXTURE0);
-	int tLocation = glGetUniformLocation(ourShader2.ID, "texture1");
-	glUniform1i(tLocation, 0);
-	glBindVertexArray(VAO_back);
-	glDrawArrays(GL_TRIANGLES, 0, vertices_back.size());
-
+	if (clearStage == false && overStage == false) {
+		ourShader2.use();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, GL_TEXTURE0);
+		int tLocation = glGetUniformLocation(ourShader2.ID, "texture1");
+		glUniform1i(tLocation, 0);
+		glBindVertexArray(VAO_back);
+		glDrawArrays(GL_TRIANGLES, 0, vertices_back.size());
+	}
 	glEnable(GL_DEPTH_TEST);
 	glFrontFace(GL_CCW);
 	glEnable(GL_CULL_FACE);
-
 
 	ourShader.use();
 
@@ -343,7 +373,7 @@ void gameScene::Render()
 
 
 	//여기에 그리기
-	
+
 
 	//ball
 	glBindVertexArray(VAO);
@@ -469,6 +499,25 @@ void gameScene::Render()
 			glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &modelmat_f[0][0]);
 			glDrawArrays(GL_TRIANGLES, 0, vertices_floor.size());
 		}
+	}
+
+	if (clearStage) {
+		ourShader2.use();
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, GL_TEXTURE1);
+		int tLocation = glGetUniformLocation(ourShader2.ID, "texture1");
+		glUniform1i(tLocation, 0);
+		glBindVertexArray(VAO_back);
+		glDrawArrays(GL_TRIANGLES, 0, vertices_back.size());
+	}
+	else if (overStage) {
+		ourShader2.use();
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, GL_TEXTURE2);
+		int tLocation = glGetUniformLocation(ourShader2.ID, "texture1");
+		glUniform1i(tLocation, 0);
+		glBindVertexArray(VAO_back);
+		glDrawArrays(GL_TRIANGLES, 0, vertices_back.size());
 	}
 
 	glDisable(GL_DEPTH_TEST);
