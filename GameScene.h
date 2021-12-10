@@ -91,6 +91,7 @@ public:
 
 	void InitMap();
 	void InitTexture();
+	void drawModel();
 
 	virtual void init() override;
 
