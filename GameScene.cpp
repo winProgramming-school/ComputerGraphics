@@ -68,7 +68,14 @@ void gameScene::Play(int Sound_num, int cannel) {
 	//fSystem->playSound(bgSound[Sound_num], NULL, 0, Channel);
 }
 void gameScene::InitMap() {
-	std::ifstream fin{ "map2.txt" };
+	std::ifstream fin;
+	if (stage == 1) {
+		fin.open("map1.txt");
+	}
+	else {
+		fin.open("map2.txt");
+	}
+
 
 	map = new int* [1050];
 	for (int i = 0; i < 1050; ++i) {
@@ -287,7 +294,7 @@ void gameScene::drawModel() {
 	modelmat = glm::mat4(1.0f);
 	modelmat = glm::translate(modelmat, glm::vec3(ball.x + mouse.move, ball.y, 0.0f));
 	modelmat = glm::rotate(modelmat, glm::radians(ball.rAngle), glm::vec3(1.0f, 0.0f, 0.0f));
-	modelmat = glm::scale(modelmat, glm::vec3(0.15f, 0.15f, 0.15f));
+	modelmat = glm::scale(modelmat, glm::vec3(0.12f, 0.12f, 0.12f));
 	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &modelmat[0][0]);
 	glUniform3f(fragColor, ball.r, ball.g, ball.b);
 	glDrawArrays(GL_TRIANGLES, 0, vertices_sphere.size());
@@ -432,7 +439,10 @@ void gameScene::processKey(unsigned char key, int x, int y)
 			testmode = true;
 		}
 		break;
-
+	case 'v':
+		index = 920;
+		speed = 930;
+		break;
 	}
 }
 
@@ -445,6 +455,8 @@ void gameScene::Mouse(int button, int state, int x, int y)
 			mouse.y = y;
 		}
 	}
+
+
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
 		mouse.mouse_down = true;
 		ball.x += mouse.move;
@@ -492,7 +504,7 @@ void gameScene::Update(const float frametime)
 		if (ball.y > 1.3f || ball.falling)
 			ball.y += GRAVITY * frametime * 2;
 		else
-			ball.y = 1.0f;
+			ball.y = 0.8f;
 	}
 
 	if (ball.y >= 8.0f) {      //점프 최고 높이 달성 시 떨어지게 만듦
@@ -537,7 +549,7 @@ void gameScene::Update(const float frametime)
 
 		// 점프 발판
 		if (map[index + 10][i] == 3) {
-			if (center_x - 1.5f <= ball.x + mouse.move && center_x + 1.5 >= ball.x + mouse.move && ball.y <= 1.3f && ball.y >= 0.8f) {
+			if (center_x - 1.5f <= ball.x + mouse.move && center_x + 1.5 >= ball.x + mouse.move && ball.y <= 1.3f && ball.y >= 0.7f) {
 				ball.isJump = true;
 			}
 		}
@@ -545,7 +557,7 @@ void gameScene::Update(const float frametime)
 		// 장애물
 		else if (map[index + 10][i] == 1) {
 			float distance = (center_x - (ball.x + mouse.move)) * (center_x - (ball.x + mouse.move));
-			if (sqrt(distance) < 1.5f + 1.0f && (ball.y - 1.0f) <= 2.0f) {
+			if (sqrt(distance) < 1.5f + 0.8f && (ball.y - 0.8f) <= 2.0f) {
 				Play(2, 1);
 				ball.r = 0.0f;
 				ball.g = 1.0f;
@@ -557,7 +569,7 @@ void gameScene::Update(const float frametime)
 
 		// 빈 공간
 		else if (map[index + 10][i] == 4) {
-			if (center_x - 1.5f <= ball.x + mouse.move && center_x + 1.5 >= ball.x + mouse.move && ball.y <= 1.3f && ball.y >= 0.8f) {
+			if (center_x - 1.5f <= ball.x + mouse.move && center_x + 1.5 >= ball.x + mouse.move && ball.y <= 1.3f && ball.y >= 0.7f) {
 				ball.falling = true;
 			}
 		}
@@ -565,7 +577,7 @@ void gameScene::Update(const float frametime)
 		// 움직이는 장애물
 		else if (map[index + 10][i] == 2) {
 			float distance = (center_x - (ball.x + mouse.move)) * (center_x - (ball.x + mouse.move));
-			if (sqrt(distance) < 1.5f + 1.0f && (ball.y - 1.0f) <= obstacle_y[i]) {
+			if (sqrt(distance) < 1.5f + 0.8f && (ball.y - 0.8f) <= obstacle_y[i]) {
 				Play(2, 1);
 				ball.r = 0.0f;
 				ball.g = 1.0f;
@@ -622,6 +634,13 @@ void gameScene::Render()
 		scene* scene = GameManager.curScene;   ////현재 씬을 tmp에 넣고 지워줌
 		GameManager.curScene = new clearScene;
 		GameManager.curScene->init();
+		if (stage == 1) {
+			GameManager.curScene->stage = 1;
+		}
+		else if (stage == 2) {
+			GameManager.curScene->stage = 2;
+		}
+
 		GameManager.nowscene = CLEAR; //다시시작
 		delete scene;
 	}
@@ -633,6 +652,12 @@ void gameScene::Render()
 		scene* scene = GameManager.curScene;   ////현재 씬을 tmp에 넣고 지워줌
 		GameManager.curScene = new overScene;
 		GameManager.curScene->init();
+		if (stage == 1) {
+			GameManager.curScene->stage = 1;
+		}
+		else if (stage == 2) {
+			GameManager.curScene->stage = 2;
+		}
 		GameManager.nowscene = OVER; //다시시작
 		delete scene;
 	}

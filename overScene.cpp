@@ -74,11 +74,24 @@ void overScene::processKey(unsigned char key, int x, int y)
         glutLeaveMainLoop();
         break;
     case 's':
-        scene * scene = GameManager.curScene;   ////현재 씬을 tmp에 넣고 지워줌
-        GameManager.curScene = new gameScene;
-        GameManager.curScene->init();
-        GameManager.nowscene = GAME; //다시시작
-        delete scene;
+        if (stage == 1) {
+            scene* scene = GameManager.curScene;   ////현재 씬을 tmp에 넣고 지워줌
+            GameManager.curScene = new gameScene;
+            GameManager.curScene->stage = 1;
+            GameManager.curScene->init();
+            GameManager.nowscene = GAME; //다시시작
+            delete scene;
+
+        }
+        else {
+            scene* scene = GameManager.curScene;   ////현재 씬을 tmp에 넣고 지워줌
+            GameManager.curScene = new gameScene;
+            GameManager.curScene->stage = 2;
+            GameManager.curScene->init();
+            GameManager.nowscene = GAME; //다시시작
+            delete scene;
+        }
+
         break;
     }
 }

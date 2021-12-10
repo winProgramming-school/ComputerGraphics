@@ -14,6 +14,7 @@ public:
 
 	Shader ourShader2;
 
+	int stage{ 1 };
 
 public:
 	~clearScene();

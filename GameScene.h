@@ -10,7 +10,7 @@ class Shader;
 typedef struct BALL {
 	glm::mat4 modelmat{ glm::mat4(1.0f) };
 	float x{ 0.0f };
-	float y{ 1.0f };
+	float y{ 0.8f };
 
 	float r{ 0.8f };
 	float g{ 0.619f };
