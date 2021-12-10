@@ -375,6 +375,14 @@ void gameScene::processKey(unsigned char key, int x, int y)
 		speed = 0;
 		index = 0;
 		break;
+	case 'p':
+		if (pause) {
+			pause = false;
+		}
+		else {
+			pause = true;
+		}
+		break;
 	}
 }
 
@@ -400,6 +408,8 @@ void gameScene::MouseMotion(int x, int y)
 
 void gameScene::Update(const float frametime)
 {
+	if (pause)
+		return;
 	// 공이 떨어졌으면 update 중단
 	if (!ball.falling) {
 		//인덱스 조정
