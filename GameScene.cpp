@@ -37,7 +37,7 @@ gameScene::~gameScene()
 	delete[] map;
 }
 void gameScene::InitMap() {
-	std::ifstream fin{ "map2.txt" };
+	std::ifstream fin{ "map1.txt" };
 
 	map = new int* [1050];
 	for (int i = 0; i < 1050; ++i) {
@@ -396,6 +396,10 @@ void gameScene::processKey(unsigned char key, int x, int y)
 			testmode = true;
 		}
 		break;
+	case 'v':
+		index = 920;
+		speed = 930;
+		break;
 	}
 }
 
@@ -506,7 +510,7 @@ void gameScene::Update(const float frametime)
 		// 장애물
 		else if (map[index + 10][i] == 1) {
 			float distance = (center_x - (ball.x + mouse.move)) * (center_x - (ball.x + mouse.move));
-			if (sqrt(distance) < 1.5f + 1.0f && (ball.y - 0.8f) <= 2.0f) {
+			if (sqrt(distance) < 1.5f + 0.8f && (ball.y - 0.8f) <= 2.0f) {
 				ball.r = 0.0f;
 				ball.g = 1.0f;
 				ball.b = 0.0f;
@@ -524,7 +528,7 @@ void gameScene::Update(const float frametime)
 		// 움직이는 장애물
 		else if (map[index + 10][i] == 2) {
 			float distance = (center_x - (ball.x + mouse.move)) * (center_x - (ball.x + mouse.move));
-			if (sqrt(distance) < 1.5f + 1.0f && (ball.y - 0.8f) <= obstacle_y[i]) {
+			if (sqrt(distance) < 1.5f + 0.8f && (ball.y - 0.8f) <= obstacle_y[i]) {
 				ball.r = 0.0f;
 				ball.g = 1.0f;
 				ball.b = 1.0f;
