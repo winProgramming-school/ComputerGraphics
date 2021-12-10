@@ -5,7 +5,6 @@
 
 class Shader;
 
-enum OBSTACLE { NORMAL, NONE, CONE };
 
 typedef struct BALL {
 	glm::mat4 modelmat{ glm::mat4(1.0f) };
@@ -19,6 +18,20 @@ typedef struct BALL {
 
 	bool isJump{ false };
 	bool falling{ false };
+
+	void Init() {
+		x =0.0f;
+		y =1.0f;
+
+		r =0.8f;
+		g =0.619f;
+		b =1.0f;
+		rAngle =0.0f;
+
+		isJump = false;
+		falling = false;
+	}
+
 }BALL;
 
 typedef struct MOUSE {
@@ -85,6 +98,8 @@ public:
 
 	bool clearStage = false;
 	bool overStage = false;
+
+	bool gameover{ false };
 
 	////텍스처 쉐이더 uniform 변수 위치
 	//unsigned int viewLocation2, projectionLocation2, modelLocation2;

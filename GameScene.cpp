@@ -370,6 +370,11 @@ void gameScene::processKey(unsigned char key, int x, int y)
 		clearStage = false;
 		overStage = true;
 		break;
+	case 'r':
+		ball.Init();
+		speed = 0;
+		index = 0;
+		break;
 	}
 }
 
@@ -419,6 +424,8 @@ void gameScene::Update(const float frametime)
 	else {                  //점프 상태가 아니고 바닥과 닿아있지 않다면 중력 계속 작용
 		if (ball.y > 1.3f || ball.falling)
 			ball.y += GRAVITY * frametime * 2;
+		else
+			ball.y = 1.0f;
 	}
 
 	if (ball.y >= 8.0f) {      //점프 최고 높이 달성 시 떨어지게 만듦
