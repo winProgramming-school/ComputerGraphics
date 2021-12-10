@@ -5,17 +5,17 @@
 
 class Shader;
 
-enum OBSTACLE{NORMAL, NONE, CONE};
+enum OBSTACLE { NORMAL, NONE, CONE };
 
 typedef struct BALL {
 	glm::mat4 modelmat{ glm::mat4(1.0f) };
-	float x{0.0f};
-	float y{1.0f};
+	float x{ 0.0f };
+	float y{ 1.0f };
 
 	float r{ 0.8f };
 	float g{ 0.619f };
 	float b{ 1.0f };
-	float rAngle{0.0f};
+	float rAngle{ 0.0f };
 
 	bool isJump{ false };
 	bool falling{ false };
@@ -60,7 +60,7 @@ public:
 
 	GLuint VAO_back;
 	GLuint VBO_back_position[2];
-	
+
 	Shader ourShader;
 	Shader ourShader2;
 
@@ -79,11 +79,8 @@ public:
 	float sizeOfWally = 0.01f;
 	float sizeOfWallz = 3.0f;
 
-	bool clearStage = false;
-	bool overStage = false;
-	
-	float obstacle_speed[5]{3.0f, 4.0f, 3.5f, 5.0f, 5.5f};		//각각 장애물 속도
-	float obstacle_y[5]{1.0f, 1.0f, 1.0f, 1.0f, 1.0f };			//각각 장애물 높이
+	float obstacle_speed[5]{ 3.0f, 4.0f, 3.5f, 5.0f, 5.5f };		//각각 장애물 속도
+	float obstacle_y[5]{ 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };			//각각 장애물 높이
 	bool obstacle_up[5]{ true, true, false, false, true };		//각각 장애물 up or down
 
 	////텍스처 쉐이더 uniform 변수 위치
