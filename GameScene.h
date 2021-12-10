@@ -79,6 +79,10 @@ public:
 	float sizeOfWally = 0.01f;
 	float sizeOfWallz = 3.0f;
 	
+	float obstacle_speed[5]{3.0f, 4.0f, 3.5f, 5.0f, 5.5f};		//각각 장애물 속도
+	float obstacle_y[5]{1.0f, 1.0f, 1.0f, 1.0f, 1.0f };			//각각 장애물 높이
+	bool obstacle_up[5]{ true, true, false, false, true };		//각각 장애물 up or down
+
 	////텍스처 쉐이더 uniform 변수 위치
 	//unsigned int viewLocation2, projectionLocation2, modelLocation2;
 	//unsigned int texture;

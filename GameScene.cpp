@@ -35,10 +35,10 @@ gameScene::~gameScene()
     delete[] map;
 }
 void gameScene::InitMap() {
-    std::ifstream fin{ "map1.txt" };
+    std::ifstream fin{ "map2.txt" };
 
-    map = new int* [3000];
-    for (int i = 0; i < 3000; ++i) {
+    map = new int* [1000];
+    for (int i = 0; i < 1000; ++i) {
         map[i] = new int[5];
     }
 
@@ -50,7 +50,7 @@ void gameScene::InitMap() {
     char ch;
     int tmp;
     int i = 0;
-    while (fin >> ch && num != 3000) // 파일이 끝날때까지 한 줄씩 읽어오기
+    while (fin >> ch && num != 1000) // 파일이 끝날때까지 한 줄씩 읽어오기
     {
         map[num][i] = ch - '0';
         i++;
@@ -233,7 +233,7 @@ void gameScene::drawModel() {
 
 
 
-    for (int i = index; i < speed + 100; i++) {
+    for (int i = index; i < index + 100; i++) {
         floor_zPos = i * -1.0f + speed;
         for (int j = 0; j < 5; j++) {
             modelmat_f = glm::mat4(1.0f);
@@ -255,7 +255,7 @@ void gameScene::drawModel() {
             else if (map[i][j] == 2) {//2 : 벽, 움직이고
                 glUniform3f(fragColor, 0.4f, 0.4f, 0.4f);
                 sizeOfWallx = 3.0f;
-                sizeOfWally = 5.0f;
+                sizeOfWally = obstacle_y[j];
                 sizeOfWallz = 3.0f;
             }
             else if (map[i][j] == 3) {//3 : 점프 발판
@@ -294,18 +294,6 @@ void gameScene::drawModel() {
                 floor_xPos = 2.0f;
             }
 
-            //보류
-            //if (map[i][j] == 1) {//1 : 장애물(닿으면 죽음)
-            //   /*modelmat_ob1 = glm::mat4(1.0f);
-            //   glBindVertexArray(VAO_ob1);
-            //   glUniform3f(fragColor, 1.0f, 1.0f, 0.0f);
-            //   modelmat_ob1 = glm::scale(modelmat_ob1, glm::vec3(floor_xPos, 1.0f, floor_zPos));
-            //   glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &modelmat_ob1[0][0]);
-            //   glDrawArrays(GL_TRIANGLES, 0, vertices_ob1.size());*/
-            //}
-            //else {
-            //}
-            //modelmat_f = glm::rotate(modelmat_f, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
             modelmat_f = glm::scale(modelmat_f, glm::vec3(sizeOfWallx, sizeOfWally, sizeOfWallz));
             modelmat_f = glm::translate(modelmat_f, glm::vec3(floor_xPos, 0.0f, floor_zPos));
 
@@ -378,7 +366,7 @@ void gameScene::Update(const float frametime)
     // 공이 떨어졌으면 update 중단
     if (!ball.falling) {
         //인덱스 조정
-        if ((int)speed > 10) {
+        if ((int)speed > 10 && index < 900) {
             index = (int)speed - 10;
         }
 
@@ -412,7 +400,7 @@ void gameScene::Update(const float frametime)
 
         // 점프 발판
         if (map[index + 10][i] == 3) {
-            if (center_x - 1.5f <= ball.x + mouse.move && center_x + 1.5 >= ball.x + mouse.move) {
+            if (center_x - 1.5f <= ball.x + mouse.move && center_x + 1.5 >= ball.x + mouse.move && ball.y <= 1.3f && ball.y >= 0.8f) {
                 ball.isJump = true;
             }
         }
@@ -420,7 +408,7 @@ void gameScene::Update(const float frametime)
         // 장애물
         else if (map[index + 10][i] == 1) {
             float distance = (center_x - (ball.x + mouse.move)) * (center_x - (ball.x + mouse.move));
-            if (sqrt(distance) < 1.5f + 1.0f && (ball.y - 1.2f) <= 2.0f) {
+            if (sqrt(distance) < 1.5f + 1.0f && (ball.y - 1.0f) <= 2.0f) {
 				ball.r = 0.0f;
 				ball.g = 1.0f;
 				ball.b = 0.0f;
@@ -429,9 +417,36 @@ void gameScene::Update(const float frametime)
 
         // 빈 공간
         else if (map[index + 10][i] == 4) {
-            if (center_x - 1.5f <= ball.x + mouse.move && center_x + 1.5 >= ball.x + mouse.move) {
+            if (center_x - 1.5f <= ball.x + mouse.move && center_x + 1.5 >= ball.x + mouse.move && ball.y <= 1.3f && ball.y >= 0.8f) {
                 ball.falling = true;
             }
+        }
+
+        // 움직이는 장애물
+        else if (map[index + 10][i] == 2) {
+            float distance = (center_x - (ball.x + mouse.move)) * (center_x - (ball.x + mouse.move));
+            if (sqrt(distance) < 1.5f + 1.0f && (ball.y - 1.0f) <= obstacle_y[i]) {
+                ball.r = 0.0f;
+                ball.g = 1.0f;
+                ball.b = 0.0f;
+            }
+        }
+    }
+
+
+    // 움직이는 장애물 update
+    for (int i = 0; i < 5; ++i) {
+        if (obstacle_y[i] >= 5.0f && obstacle_up[i]) {
+            obstacle_up[i] = false;
+        }
+        if (obstacle_y[i] <= 0.25f && !obstacle_up[i]) {
+            obstacle_up[i] = true;
+        }
+        if (obstacle_up[i]) {
+            obstacle_y[i] += obstacle_speed[i] * frametime;
+        }
+        else {
+            obstacle_y[i] -= obstacle_speed[i] * frametime;
         }
     }
 }
