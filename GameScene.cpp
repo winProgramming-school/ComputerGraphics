@@ -37,8 +37,8 @@ gameScene::~gameScene()
 void gameScene::InitMap() {
 	std::ifstream fin{ "map2.txt" };
 
-	map = new int* [1000];
-	for (int i = 0; i < 1000; ++i) {
+	map = new int* [1050];
+	for (int i = 0; i < 1050; ++i) {
 		map[i] = new int[5];
 	}
 
@@ -50,7 +50,7 @@ void gameScene::InitMap() {
 	char ch;
 	int tmp;
 	int i = 0;
-	while (fin >> ch && num != 1000) // 파일이 끝날때까지 한 줄씩 읽어오기
+	while (fin >> ch && num != 1050) // 파일이 끝날때까지 한 줄씩 읽어오기
 	{
 		map[num][i] = ch - '0';
 		i++;
@@ -383,6 +383,14 @@ void gameScene::processKey(unsigned char key, int x, int y)
 			pause = true;
 		}
 		break;
+	case 't':
+		if (testmode) {
+			testmode = false;
+		}
+		else {
+			testmode = true;
+		}
+		break;
 	}
 }
 
@@ -410,13 +418,18 @@ void gameScene::Update(const float frametime)
 {
 	if (pause)
 		return;
+
 	// 공이 떨어졌으면 update 중단
 	if (!ball.falling) {
 		//인덱스 조정
-		if ((int)speed > 10 && index < 900) {
+		if ((int)speed > 10 && index < 920) {
 			index = (int)speed - 10;
 		}
-
+		if (speed >= 1030) {
+			ball.Init();
+			speed = 0;
+			index = 0;
+		}
 		if (ball.rAngle >= 360.0f) {      //회전 각도 무한 증가 방지
 			ball.rAngle = 0.0f;
 		}
@@ -440,6 +453,26 @@ void gameScene::Update(const float frametime)
 
 	if (ball.y >= 8.0f) {      //점프 최고 높이 달성 시 떨어지게 만듦
 		ball.isJump = false;
+	}
+
+	if (testmode) {
+		return;
+	}
+
+	// 움직이는 장애물 update
+	for (int i = 0; i < 5; ++i) {
+		if (obstacle_y[i] >= 5.0f && obstacle_up[i]) {
+			obstacle_up[i] = false;
+		}
+		if (obstacle_y[i] <= 0.25f && !obstacle_up[i]) {
+			obstacle_up[i] = true;
+		}
+		if (obstacle_up[i]) {
+			obstacle_y[i] += obstacle_speed[i] * frametime;
+		}
+		else {
+			obstacle_y[i] -= obstacle_speed[i] * frametime;
+		}
 	}
 
 	// 공과 각종 장애물 충돌
@@ -483,21 +516,6 @@ void gameScene::Update(const float frametime)
 	}
 
 
-	// 움직이는 장애물 update
-	for (int i = 0; i < 5; ++i) {
-		if (obstacle_y[i] >= 5.0f && obstacle_up[i]) {
-			obstacle_up[i] = false;
-		}
-		if (obstacle_y[i] <= 0.25f && !obstacle_up[i]) {
-			obstacle_up[i] = true;
-		}
-		if (obstacle_up[i]) {
-			obstacle_y[i] += obstacle_speed[i] * frametime;
-		}
-		else {
-			obstacle_y[i] -= obstacle_speed[i] * frametime;
-		}
-	}
 }
 
 void gameScene::Render()

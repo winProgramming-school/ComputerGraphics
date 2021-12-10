@@ -81,7 +81,7 @@ public:
 	MOUSE mouse;
 
 	float floor_FirstZ{};							//화면에 보이는 바닥 타일 중 제일 작은 z좌표값
-	int index{};									//바닥 시작 인덱스
+	int index{ };									//바닥 시작 인덱스
 
 	int** map;
 
@@ -100,6 +100,7 @@ public:
 	bool overStage = false;
 
 	bool pause{ false };
+	bool testmode{ false };
 
 	////텍스처 쉐이더 uniform 변수 위치
 	//unsigned int viewLocation2, projectionLocation2, modelLocation2;
