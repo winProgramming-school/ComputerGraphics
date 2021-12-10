@@ -1,7 +1,7 @@
 #pragma once
 #include "scene.h"
 
-enum SCENE { MENU, GAME, STAGE2 };
+enum SCENE { MENU, GAME, STAGE2, OVER, CLEAR };
 
 class scene;
 

@@ -29,6 +29,7 @@ gameScene::~gameScene()
 	normals_back.shrink_to_fit();
 
 	glDeleteShader(ourShader.ID);
+	glDeleteShader(ourShader2.ID);
 
 	for (int i = 0; i < 10; i++)
 		delete[] map[i];
@@ -194,6 +195,9 @@ void gameScene::init()
 	CD.y = 0.0f;
 	CD.z = 0.0f;
 
+	//생명
+	lifePoint = 3;
+
 	//조명을 흰색으로 고정
 	glUniform3f(lightColor, 1.0f, 1.0f, 1.0f);
 
@@ -240,7 +244,18 @@ void gameScene::init()
 void gameScene::drawModel() {
 
 
+	/*if (clearStage == false && overStage == false) {
 
+		ourShader2.use();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, GL_TEXTURE0);
+		int tLocation = glGetUniformLocation(ourShader2.ID, "texture1");
+		glUniform1i(tLocation, 0);
+		glBindVertexArray(VAO_back);
+		glDrawArrays(GL_TRIANGLES, 0, vertices_back.size());
+	}*/
+
+	ourShader.use();
 	//ball
 	glBindVertexArray(VAO);
 	modelmat = glm::mat4(1.0f);
@@ -254,8 +269,6 @@ void gameScene::drawModel() {
 	//floor
 
 	glBindVertexArray(VAO_f);
-
-
 
 	for (int i = index; i < index + 100; i++) {
 		floor_zPos = i * -1.0f + speed;
@@ -329,13 +342,11 @@ void gameScene::drawModel() {
 			//    float min_z{};
 			//    float min_y{};
 			//    float min_x{};
-
 			//    tmp = modelmat_f * glm::vec4(vertices_floor[0], 1);
 			//    max_x = tmp.x;
 			//    min_x = tmp.x;
 			//    min_z = tmp.z;
 			//    max_z = tmp.z;
-
 			//    for (int i = 1; i < vertices_floor.size(); ++i) {
 			//        tmp = modelmat_f * glm::vec4(vertices_floor[i], 1);
 			//        max_x = (max_x < tmp.x) ? tmp.x : max_x;
@@ -345,7 +356,6 @@ void gameScene::drawModel() {
 			//    }
 			//    float center_x = (max_x + min_x) / 2;
 			//    float center_z = (max_z + min_z) / 2;
-
 			//    float length_x = (max_x - min_x) / 2;
 			//}
 
@@ -362,18 +372,19 @@ void gameScene::processKey(unsigned char key, int x, int y)
 	case 'q':
 		glutLeaveMainLoop();
 		break;
-	case 'c':
-		overStage = false;
-		clearStage = true;
-		break;
-	case 'o':
-		clearStage = false;
-		overStage = true;
-		break;
+	//case 'c':
+	//	overStage = false;
+	//	clearStage = true;
+	//	break;
+	//case 'o':
+	//	clearStage = false;
+	//	overStage = true;
+	//	break;
 	case 'r':
 		ball.Init();
 		speed = 0;
 		index = 0;
+		lifePoint = 3;
 		break;
 	case 'p':
 		if (pause) {
@@ -416,7 +427,8 @@ void gameScene::MouseMotion(int x, int y)
 
 void gameScene::Update(const float frametime)
 {
-	if (pause)
+	// 공이 떨어졌으면 update 중단
+	if (pause) {
 		return;
 
 	// 공이 떨어졌으면 update 중단
@@ -475,6 +487,15 @@ void gameScene::Update(const float frametime)
 		}
 	}
 
+	if (ball.y <= -8.0f) {     // 떨어지면 주금
+		lifePoint = 0;
+	}
+
+	if (lifePoint == 0)			//생명이 다 줄어들면
+	{
+		overStage = true;
+	}
+
 	// 공과 각종 장애물 충돌
 	for (int i = 0; i < 5; ++i) {
 		float center_x = -6.0f + i * 3.0f;
@@ -494,6 +515,7 @@ void gameScene::Update(const float frametime)
 				ball.r = 0.0f;
 				ball.g = 1.0f;
 				ball.b = 0.0f;
+				lifePoint -= 1;
 			}
 		}
 
@@ -510,7 +532,8 @@ void gameScene::Update(const float frametime)
 			if (sqrt(distance) < 1.5f + 1.0f && (ball.y - 1.0f) <= obstacle_y[i]) {
 				ball.r = 0.0f;
 				ball.g = 1.0f;
-				ball.b = 0.0f;
+				ball.b = 1.0f;
+				lifePoint -= 1;
 			}
 		}
 	}
@@ -529,19 +552,7 @@ void gameScene::Render()
 	glFrontFace(GL_CCW);
 	glEnable(GL_CULL_FACE);
 
-	/*if (clearStage == false && overStage == false) {
-
-		ourShader2.use();
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, GL_TEXTURE0);
-		int tLocation = glGetUniformLocation(ourShader2.ID, "texture1");
-		glUniform1i(tLocation, 0);
-		glBindVertexArray(VAO_back);
-		glDrawArrays(GL_TRIANGLES, 0, vertices_back.size());
-}*/
-
 	ourShader.use();
-
 
 	//메인화면
 	CP.cameraPos = glm::vec3(CP.x, CP.y, CP.z);
@@ -552,35 +563,29 @@ void gameScene::Render()
 	glViewport(0, 0, WINDOW_LENGTH, WINDOW_HEIGHT);
 	drawModel();
 
+	////미니맵
+	//CP.cameraPos = glm::vec3(CP.x, CP.y + 12.0f, CP.z - 4.0f);
+	//CD.cameraDirection = glm::vec3(CD.x, CD.y, CD.z);
+	//CP.cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+	//view = glm::lookAt(CP.cameraPos, CD.cameraDirection, CP.cameraUp);
+	//glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
+	//glViewport(WINDOW_LENGTH - 100, WINDOW_HEIGHT - 100, WINDOW_LENGTH / 8, WINDOW_HEIGHT / 8);
+	//drawModel();
 
-	//미니맵
-	CP.cameraPos = glm::vec3(CP.x, CP.y + 12.0f, CP.z - 4.0f);
-	CD.cameraDirection = glm::vec3(CD.x, CD.y, CD.z);
-	CP.cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-	view = glm::lookAt(CP.cameraPos, CD.cameraDirection, CP.cameraUp);
-	glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
-	glViewport(WINDOW_LENGTH - 100, WINDOW_HEIGHT - 100, WINDOW_LENGTH / 8, WINDOW_HEIGHT / 8);
-	drawModel();
-
-	//if (clearStage) {
-	//	ourShader2.use();
-	//	glActiveTexture(GL_TEXTURE1);
-	//	glBindTexture(GL_TEXTURE_2D, GL_TEXTURE1);
-	//	int tLocation = glGetUniformLocation(ourShader2.ID, "texture1");
-	//	glUniform1i(tLocation, 0);
-	//	glBindVertexArray(VAO_back);
-	//	glDrawArrays(GL_TRIANGLES, 0, vertices_back.size());
-	//}
-	//else if (overStage) {
-	//	ourShader2.use();
-	//	glActiveTexture(GL_TEXTURE2);
-	//	glBindTexture(GL_TEXTURE_2D, GL_TEXTURE2);
-	//	int tLocation = glGetUniformLocation(ourShader2.ID, "texture1");
-	//	glUniform1i(tLocation, 0);
-	//	glBindVertexArray(VAO_back);
-	//	glDrawArrays(GL_TRIANGLES, 0, vertices_back.size());
-	//}
-
+	if (clearStage) {
+		scene* scene = GameManager.curScene;   ////현재 씬을 tmp에 넣고 지워줌
+		GameManager.curScene = new clearScene;
+		GameManager.curScene->init();
+		GameManager.nowscene = CLEAR; //다시시작
+		delete scene;
+	}
+	else if (overStage) {
+		scene* scene = GameManager.curScene;   ////현재 씬을 tmp에 넣고 지워줌
+		GameManager.curScene = new overScene;
+		GameManager.curScene->init();
+		GameManager.nowscene = OVER; //다시시작
+		delete scene;
+	}
 
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);

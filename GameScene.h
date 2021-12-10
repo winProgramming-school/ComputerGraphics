@@ -81,7 +81,8 @@ public:
 	MOUSE mouse;
 
 	float floor_FirstZ{};							//화면에 보이는 바닥 타일 중 제일 작은 z좌표값
-	int index{ };									//바닥 시작 인덱스
+	int index{};									//바닥 시작 인덱스
+	int lifePoint{3};								//목숨						
 
 	int** map;
 
