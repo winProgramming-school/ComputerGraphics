@@ -37,7 +37,14 @@ gameScene::~gameScene()
 	delete[] map;
 }
 void gameScene::InitMap() {
-	std::ifstream fin{ "map1.txt" };
+	std::ifstream fin;
+	if (stage == 1) {
+		fin.open("map1.txt");
+	}
+	else {
+		fin.open("map2.txt");
+	}
+
 
 	map = new int* [1050];
 	for (int i = 0; i < 1050; ++i) {
@@ -582,6 +589,13 @@ void gameScene::Render()
 		scene* scene = GameManager.curScene;   ////현재 씬을 tmp에 넣고 지워줌
 		GameManager.curScene = new clearScene;
 		GameManager.curScene->init();
+		if (stage == 1) {
+			GameManager.curScene->stage = 1;
+		}
+		else if (stage == 2) {
+			GameManager.curScene->stage = 2;
+		}
+
 		GameManager.nowscene = CLEAR; //다시시작
 		delete scene;
 	}
@@ -590,6 +604,12 @@ void gameScene::Render()
 		scene* scene = GameManager.curScene;   ////현재 씬을 tmp에 넣고 지워줌
 		GameManager.curScene = new overScene;
 		GameManager.curScene->init();
+		if (stage == 1) {
+			GameManager.curScene->stage = 1;
+		}
+		else if (stage == 2) {
+			GameManager.curScene->stage = 2;
+		}
 		GameManager.nowscene = OVER; //다시시작
 		delete scene;
 	}
