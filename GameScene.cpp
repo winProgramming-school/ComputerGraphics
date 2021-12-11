@@ -1,5 +1,4 @@
 #pragma once
-
 #include "stdafx.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -126,6 +125,8 @@ void gameScene::InitTexture() {
 	glGenerateMipmap(GL_TEXTURE_2D);
 	stbi_image_free(data1);
 
+
+
 }
 void gameScene::init()
 {
@@ -197,18 +198,19 @@ void gameScene::init()
 
 	//투영행렬은 변화 없으므로 미리 설정
 	projection = glm::perspective(glm::radians(45.0f), (float)WINDOW_LENGTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
+	projection = glm::translate(projection, glm::vec3(0.0f, 0.0f, -2.0f));
 	glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, &projection[0][0]);
 
 	//카메라 위치
 
 	CP.x = 0.0f;
-	CP.y = 5.0f;
+	CP.y = 5.5f;
 	CP.z = 15.0f;
 
 	//빛 위치
-	LP.x = 1.0f;
+	LP.x = 0.5f;
 	LP.y = 1.5f;
-	LP.z = 1.0f;
+	LP.z = 0.5f;
 
 	//카메라 방향
 	CD.x = 0.0f;
@@ -263,14 +265,14 @@ void gameScene::init()
 }
 void gameScene::drawModel() {
 
-	ourShader.use();
 
+	ourShader.use();
 	//ball
 	glBindVertexArray(VAO);
 	modelmat = glm::mat4(1.0f);
-	modelmat = glm::translate(modelmat, glm::vec3(ball.x + mouse.move, ball.y, 0.0f));
+	modelmat = glm::translate(modelmat, glm::vec3(ball.x + mouse.move, ball.y + 0.5f, 0.0f));
 	modelmat = glm::rotate(modelmat, glm::radians(ball.rAngle), glm::vec3(1.0f, 0.0f, 0.0f));
-	modelmat = glm::scale(modelmat, glm::vec3(0.12f, 0.12f, 0.12f));
+	modelmat = glm::scale(modelmat, glm::vec3(0.12f, ball_y, 0.12f));
 	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &modelmat[0][0]);
 	glUniform3f(fragColor, ball.r, ball.g, ball.b);
 	glDrawArrays(GL_TRIANGLES, 0, vertices_sphere.size());
@@ -287,45 +289,44 @@ void gameScene::drawModel() {
 		floor_zPos = i * -1.0f + speed;
 		for (int j = 0; j < 5; j++) {
 			modelmat_f = glm::mat4(1.0f);
-
 			//맵과 연결
 			if (map[i][j] == 0) {//0 : base (기본 땅)
 
-				glUniform3f(fragColor, 0.8f, 1.0f, 1.0f);//연하늘
+				glUniform3f(fragColor, 0.718f, 0.854f, 0.97f);//연하늘
 				sizeOfWallx = 3.0f;
-				sizeOfWally = 0.01f;
+				sizeOfWally = 0.2f;
 				sizeOfWallz = 3.0f;
 			}
 			else if (map[i][j] == 1) {//1 : 장애물(닿으면 죽음)
-				glUniform3f(fragColor, 0.8f, 0.0f, 0.0f);
+				glUniform3f(fragColor, 0.980f, 0.201f, 0.285f);
 				sizeOfWallx = 3.0f;
-				sizeOfWally = 2.0f;
+				sizeOfWally = 1.5f;
 				sizeOfWallz = 3.0f;
 			}
 			else if (map[i][j] == 2) {//2 : 벽, 움직이고
-				glUniform3f(fragColor, 0.4f, 0.4f, 0.4f);
+				glUniform3f(fragColor, 0.187f, 0.51f, 0.299f);
 				sizeOfWallx = 3.0f;
-				sizeOfWally = obstacle_y[j];
+				sizeOfWally = obstacle_y[j] - 0.5f;
 				sizeOfWallz = 3.0f;
 			}
 			else if (map[i][j] == 3) {//3 : 점프 발판
 
-				glUniform3f(fragColor, 0.0f, 0.0f, 1.0f);//블루
+				glUniform3f(fragColor, 0.013f, 0.36f, 0.705f);
 				sizeOfWallx = 3.0f;
-				sizeOfWally = 0.01f;
+				sizeOfWally = 0.2f;
 				sizeOfWallz = 3.0f;
 			}
 			else if (map[i][j] == 4) {//4 : 빈 공간
-				glUniform3f(fragColor, 0.0f, 0.0f, 0.0f);
-				sizeOfWallx = 3.0f;
-				sizeOfWally = 0.00f;
-				sizeOfWallz = 3.0f;
+
+				sizeOfWallx = 0.0f;
+				sizeOfWally = 0.0f;
+				sizeOfWallz = 0.0f;
 			}
 			else {
 				glUniform3f(fragColor, 1.0f, 1.0f, 1.0f);
-				sizeOfWallx = 3.0f;
-				sizeOfWally = 0.01f;
-				sizeOfWallz = 3.0f;
+				sizeOfWallx = 0.0f;
+				sizeOfWally = 0.0f;
+				sizeOfWallz = 0.0f;
 			}
 
 			if (j == 0) {
@@ -345,33 +346,7 @@ void gameScene::drawModel() {
 			}
 
 			modelmat_f = glm::scale(modelmat_f, glm::vec3(sizeOfWallx, sizeOfWally, sizeOfWallz));
-			modelmat_f = glm::translate(modelmat_f, glm::vec3(floor_xPos, 0.0f, floor_zPos));
-
-			//if (map[i][j] == 1) {
-			//    glm::vec4 tmp;
-			//    float max_z{};
-			//    float max_x{};
-			//    float max_y{};
-			//    float min_z{};
-			//    float min_y{};
-			//    float min_x{};
-			//    tmp = modelmat_f * glm::vec4(vertices_floor[0], 1);
-			//    max_x = tmp.x;
-			//    min_x = tmp.x;
-			//    min_z = tmp.z;
-			//    max_z = tmp.z;
-			//    for (int i = 1; i < vertices_floor.size(); ++i) {
-			//        tmp = modelmat_f * glm::vec4(vertices_floor[i], 1);
-			//        max_x = (max_x < tmp.x) ? tmp.x : max_x;
-			//        max_z = (max_z < tmp.z) ? tmp.z : max_z;
-			//        min_x = (min_x > tmp.x) ? tmp.x : min_x;
-			//        min_z = (min_z > tmp.z) ? tmp.z : min_z;
-			//    }
-			//    float center_x = (max_x + min_x) / 2;
-			//    float center_z = (max_z + min_z) / 2;
-			//    float length_x = (max_x - min_x) / 2;
-			//}
-
+			modelmat_f = glm::translate(modelmat_f, glm::vec3(floor_xPos, 0.5f, floor_zPos));
 
 			glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &modelmat_f[0][0]);
 			glDrawArrays(GL_TRIANGLES, 0, vertices_floor.size());
@@ -474,6 +449,7 @@ void gameScene::Update(const float frametime)
 	// 여기는 Ball Jump 코드
 	if (ball.isJump) {         //점프 발판을 밟았다면
 		Play(0, 1);
+		//ball_y -= 0.01f;
 		ball.y -= GRAVITY * frametime * 2;
 	}
 	else {                  //점프 상태가 아니고 바닥과 닿아있지 않다면 중력 계속 작용
@@ -485,6 +461,7 @@ void gameScene::Update(const float frametime)
 
 	if (ball.y >= 8.0f) {      //점프 최고 높이 달성 시 떨어지게 만듦
 		ball.isJump = false;
+		//ball_y = 0.12f;
 	}
 
 	if (testmode) {
@@ -493,10 +470,10 @@ void gameScene::Update(const float frametime)
 
 	// 움직이는 장애물 update
 	for (int i = 0; i < 5; ++i) {
-		if (obstacle_y[i] >= 5.0f && obstacle_up[i]) {
+		if (obstacle_y[i] >= 2.5f && obstacle_up[i]) {
 			obstacle_up[i] = false;
 		}
-		if (obstacle_y[i] <= 0.25f && !obstacle_up[i]) {
+		if (obstacle_y[i] <= 0.5f && !obstacle_up[i]) {
 			obstacle_up[i] = true;
 		}
 		if (obstacle_up[i]) {
@@ -535,11 +512,10 @@ void gameScene::Update(const float frametime)
 			float distance = (center_x - (ball.x + mouse.move)) * (center_x - (ball.x + mouse.move));
 			if (sqrt(distance) < 1.5f + 0.8f && (ball.y - 0.8f) <= 2.0f) {
 				Play(2, 1);
-				ball.r = 0.0f;
-				ball.g = 1.0f;
-				ball.b = 0.0f;
+				ball.r = 0.970f;
+				ball.g = 0.843f;
+				ball.b = 0.331f;
 				lifePoint -= 1;
-
 			}
 		}
 
@@ -553,11 +529,12 @@ void gameScene::Update(const float frametime)
 		// 움직이는 장애물
 		else if (map[index + 10][i] == 2) {
 			float distance = (center_x - (ball.x + mouse.move)) * (center_x - (ball.x + mouse.move));
-			if (sqrt(distance) < 1.5f + 0.8f && (ball.y - 0.8f) <= obstacle_y[i]) {
+			if (sqrt(distance) < 1.5f + 0.8f && (ball.y - 0.8f) <= obstacle_y[i] - 0.5f) {
 				Play(2, 1);
-				ball.r = 0.0f;
-				ball.g = 1.0f;
-				ball.b = 1.0f;
+
+				ball.r = 0.970f;
+				ball.g = 0.372f;
+				ball.b = 0.251f;
 				lifePoint -= 1;
 			}
 		}
@@ -568,10 +545,16 @@ void gameScene::Update(const float frametime)
 
 void gameScene::Render()
 {
-	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-	//glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	ourShader2.use();
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, GL_TEXTURE0);
+	int tLocation1 = glGetUniformLocation(ourShader2.ID, "texture1");
+	glUniform1i(tLocation1, 0);
+	glBindVertexArray(VAO_back);
+	glDrawArrays(GL_TRIANGLES, 0, vertices_back.size());
 
 	glEnable(GL_DEPTH_TEST);
 	glFrontFace(GL_CCW);
@@ -586,6 +569,7 @@ void gameScene::Render()
 	view = glm::lookAt(CP.cameraPos, CD.cameraDirection, CP.cameraUp);
 	glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
 	glViewport(0, 0, WINDOW_LENGTH, WINDOW_HEIGHT);
+
 	drawModel();
 
 	//미니맵
@@ -603,6 +587,7 @@ void gameScene::Render()
 	view = glm::lookAt(CP.cameraPos, CD.cameraDirection, CP.cameraUp);
 	glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
 	glViewport(0, 0, WINDOW_LENGTH, WINDOW_HEIGHT);
+
 
 	if (clearStage) {
 		fChannel[0]->setPaused(true);

@@ -22,7 +22,7 @@ void main(void)
    float d = 0.05f;
    vec3 diffuse = d * diffuseLight * lightColor;
 
-   int shininess = 20;
+   int shininess = 36;
    vec3 viewDir = normalize(viewPos - FragPos);
    vec3 reflectDir = reflect(-lightDir, norm);
 
