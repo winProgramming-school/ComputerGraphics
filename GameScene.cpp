@@ -225,8 +225,10 @@ void gameScene::init()
 	CD.z = 0.0f;
 
 	//마우스 위치
-	ball.x = 0.0f;
 	mouse.move = 0.0f;
+
+	//ball 초기화
+	ball.Init();
 
 	//생명
 	lifePoint = 3;
