@@ -204,7 +204,7 @@ void gameScene::init()
 	//카메라 위치
 
 	CP.x = 0.0f;
-	CP.y = 5.5f;
+	CP.y = 6.0f;
 	CP.z = 15.0f;
 
 	//빛 위치
