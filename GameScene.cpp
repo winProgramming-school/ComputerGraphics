@@ -40,7 +40,9 @@ gameScene::~gameScene()
 	glDeleteShader(ourShader.ID);
 	glDeleteShader(ourShader2.ID);
 
-
+	//FMOD::(bgSound); // FMOD sound 객체 해제
+	//FMOD_System_Close(fSystem); // FMOD system 객체 clsoe
+	//FMOD_System_Release(fSystem); // FMOD system 객체 해제
 	fSystem->release();
 	for (int i = 0; i < 10; i++)
 		delete[] map[i];
@@ -48,6 +50,7 @@ gameScene::~gameScene()
 }
 
 void gameScene::SoundSystem() {
+	fSystem->release();
 	FMOD::System_Create(&fSystem);
 
 	fSystem->init(4, FMOD_INIT_NORMAL, NULL);
@@ -132,9 +135,13 @@ void gameScene::init()
 {
 
 	SoundSystem();
-	fSystem->playSound(bgSound, NULL, 0, &fChannel[0]);
+
+	fChannel[0]->setPaused(true);
 	fChannel[1]->setPaused(true);
 	fChannel[2]->setPaused(true);
+
+	fSystem->playSound(bgSound, NULL, 0, &fChannel[0]);
+
 	ourShader.InitShader("vertex.glsl", "fragment.glsl");      // 쉐이더 생성
 
 	//여기에 obj로드코드
@@ -217,6 +224,12 @@ void gameScene::init()
 	CD.y = 0.0f;
 	CD.z = 0.0f;
 
+	//마우스 위치
+	mouse.move = 0.0f;
+
+	//ball 초기화
+	ball.Init();
+
 	//생명
 	lifePoint = 3;
 
@@ -264,7 +277,6 @@ void gameScene::init()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 void gameScene::drawModel() {
-
 
 	ourShader.use();
 	//ball
